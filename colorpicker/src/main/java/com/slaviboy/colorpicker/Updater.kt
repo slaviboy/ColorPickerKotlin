@@ -1063,15 +1063,15 @@ class Updater(
 
         /**
          * Method called when text view value is changed by the user.
-         * @param textView - sender text view whose value is changed
+         * @param textView sender text view whose value is changed
          */
-        fun onTextViewUpdate(textView: TextView?)
+        fun onTextViewUpdate(textView: TextView)
 
         /**
          * Method called when color window value is changed by the user.
-         * @param colorWindow - sender color window whose value is changed
+         * @param colorWindow sender color window whose value is changed
          */
-        fun onColorWindowUpdate(colorWindow: Base?)
+        fun onColorWindowUpdate(colorWindow: Base)
     }
 
     fun setOnUpdateListener(onUpdateListener: OnUpdateListener) {
