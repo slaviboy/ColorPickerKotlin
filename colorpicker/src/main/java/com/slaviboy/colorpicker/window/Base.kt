@@ -201,7 +201,7 @@ abstract class Base : View {
         if (cornerRadiusUpperLeft == 0f) {
             cornerRadiusUpperLeft = cornerRadiusAll
         }
-        if (cornerRadiusUpperRight == 0f && cornerRadiusLowerRight == 0f) {
+        if (cornerRadiusUpperRight == 0f) {
             cornerRadiusUpperRight = cornerRadiusAll
         }
         if (cornerRadiusLowerLeft == 0f) {
