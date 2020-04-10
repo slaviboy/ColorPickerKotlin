@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Base">
+
+        <attr name="selector_color" format="color" />
+        <attr name="selector_radius" format="string" />
+        <attr name="selector_stroke_width" format="string" />
+
+        <attr name="corner_radius" format="string" />
+        <attr name="corner_radius_upper_left" format="string" />
+        <attr name="corner_radius_upper_right" format="string" />
+        <attr name="corner_radius_lower_left" format="string" />
+        <attr name="corner_radius_lower_right" format="string" />
+
+        <attr name="border_color" format="color" />
+        <attr name="border_stroke_width" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="Circular">
+        <attr name="distance_range_lower" format="float" />
+        <attr name="distance_range_upper" format="float" />
+        <attr name="angle_range_lower" format="float" />
+        <attr name="angle_range_upper" format="float" />
+    </declare-styleable>
+
+
+    <declare-styleable name="Rectangular">
+        <attr name="vertical_range_lower" format="float" />
+        <attr name="vertical_range_upper" format="float" />
+        <attr name="horizontal_range_lower" format="float" />
+        <attr name="horizontal_range_upper" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="SliderA">
+        <attr name="zebra_block_size" format="dimension" />
+        <attr name="zebra_block_color" format="color" />
+        <attr name="zebra_background_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="Slider">
+        <attr name="type">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+        </attr>
+        <attr name="range_lower" format="float" />
+        <attr name="range_upper" format="float" />
+    </declare-styleable>
+
+</resources>

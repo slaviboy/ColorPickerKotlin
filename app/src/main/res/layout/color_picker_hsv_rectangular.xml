@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_sv_h"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_h_a"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_windows_texts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <com.slaviboy.colorpicker.windows.rectangular.RectangularSV
+        android:id="@+id/rectangularSV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:corner_radius="0.05vh"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_windows_texts"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/guideline_sv_h"
+        app:layout_constraintTop_toTopOf="parent"
+        app:selector_radius="0.06vh"
+        app:selector_stroke_width="0.03vh" />
+
+    <com.slaviboy.colorpicker.windows.slider.SliderH
+        android:id="@+id/sliderH"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginRight="5dp"
+        app:corner_radius="0.05vh"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_windows_texts"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_sv_h"
+        app:layout_constraintRight_toRightOf="@+id/guideline_h_a"
+        app:layout_constraintTop_toTopOf="parent"
+        app:selector_radius="0.06vh"
+        app:selector_stroke_width="0.03vh"
+        app:type="vertical" />
+
+    <com.slaviboy.colorpicker.windows.slider.SliderA
+        android:id="@+id/sliderA"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        app:corner_radius="0.05vh"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_windows_texts"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_h_a"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:selector_radius="0.06vh"
+        app:selector_stroke_width="0.03vh"
+        app:type="vertical" />
+
+    <TextView
+        android:id="@+id/hex_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HEX"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/hex_value"
+        app:layout_constraintTop_toTopOf="@id/guideline_windows_texts" />
+
+    <EditText
+        android:id="@+id/hex_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tag="hex"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_windows_texts" />
+</merge>
