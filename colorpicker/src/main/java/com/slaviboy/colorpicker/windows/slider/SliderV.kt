@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import com.slaviboy.colorpicker.Range
+import com.slaviboy.colorpicker.converter.ColorConverter
 import com.slaviboy.colorpicker.window.Slider
 
 // Copyright (C) 2020 Stanislav Georgiev
@@ -65,6 +66,17 @@ class SliderV : Slider {
         layersCanvas = Canvas(colorLayer)
         layersCanvas.drawPath(clipPath, layersPaint)
         invalidate()
+    }
+
+    override fun drawSelector(canvas: Canvas) {
+
+        // set fill color
+        val fillColor = ColorConverter.HSVtoColor(colorConverter.h, 100, colorConverter.v)
+        selectorPaint.color = fillColor
+        selectorPaint.style = Paint.Style.FILL
+        canvas.drawCircle(selectorX, selectorY, selectorRadius, selectorPaint)
+
+        super.drawSelector(canvas)
     }
 
     /**

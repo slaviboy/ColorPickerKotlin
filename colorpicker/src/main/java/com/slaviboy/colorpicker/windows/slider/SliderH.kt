@@ -66,9 +66,6 @@ class SliderH : Slider {
         selectorPaint.style = Paint.Style.FILL
         canvas.drawCircle(selectorX, selectorY, selectorRadius, selectorPaint)
 
-        // restore stroke color before calling super
-        selectorPaint.color = selectorColor
-        selectorPaint.style = Paint.Style.STROKE
         super.drawSelector(canvas)
     }
 

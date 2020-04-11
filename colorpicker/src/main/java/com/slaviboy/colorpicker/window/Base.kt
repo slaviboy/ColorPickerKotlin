@@ -9,7 +9,7 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.ViewTreeObserver.OnPreDrawListener
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.slaviboy.colorpicker.ColorHolder
 import com.slaviboy.colorpicker.CornerRadius
 import com.slaviboy.colorpicker.R
@@ -124,10 +124,46 @@ abstract class Base : View {
 
         // called before drawing to init some values that need view size
         this.afterMeasured {
-            onInitBase()
-            update()
-            onRedraw()
+            checkForWrapContent()
         }
+    }
+
+    /**
+     * Check if any of the view has a wrap content set as size,
+     * this will make the width match height and vice versa.
+     */
+    fun checkForWrapContent() {
+
+        // match width and height to have same value if any of is WRAP_CONTENT
+        var newWidth = width
+        var newHeight = height
+        if (layoutParams.height != layoutParams.width) {
+            if (layoutParams.height == ConstraintLayout.LayoutParams.WRAP_CONTENT) {
+                newHeight = width
+            } else if (layoutParams.width == ConstraintLayout.LayoutParams.WRAP_CONTENT) {
+                newWidth = height
+            }
+        }
+
+        // if change is made
+        if (newHeight != height || newWidth != width) {
+            layoutParams.width = newWidth
+            layoutParams.height = newHeight
+            layoutParams = layoutParams
+
+            // call since the layout params are changed
+            this.afterMeasured {
+                afterMeasuredInit()
+            }
+        } else {
+            afterMeasuredInit()
+        }
+    }
+
+    fun afterMeasuredInit() {
+        onInitBase()
+        update()
+        onRedraw()
     }
 
     /**
@@ -182,7 +218,6 @@ abstract class Base : View {
      * is done. XML unit values are set after view width and height is needed to get unit values as pixels.
      */
     private fun onInitBase() {
-
         // get view width and height
         halfWidth = width / 2f
         halfHeight = height / 2f
