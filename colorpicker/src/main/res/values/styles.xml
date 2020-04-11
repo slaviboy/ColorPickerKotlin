@@ -12,6 +12,9 @@
         <attr name="corner_radius_lower_left" format="string" />
         <attr name="corner_radius_lower_right" format="string" />
 
+        <attr name="selector_extra_stroke_color" format="color" />
+        <attr name="selector_extra_stroke_width" format="string" />
+
         <attr name="border_color" format="color" />
         <attr name="border_stroke_width" format="string" />
     </declare-styleable>

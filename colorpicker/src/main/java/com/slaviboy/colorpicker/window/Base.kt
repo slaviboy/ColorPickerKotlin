@@ -93,7 +93,7 @@ abstract class Base : View {
         selectorStrokeWidth = 0f
         selectorRadius = 0f
         selectorExtraStrokeColor = Color.BLACK
-        selectorExtraStrokeWidth = 9f
+        selectorExtraStrokeWidth = 0f
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
@@ -109,11 +109,13 @@ abstract class Base : View {
             typedArray.getString(R.styleable.Base_corner_radius_upper_left) ?: "0px",
             typedArray.getString(R.styleable.Base_corner_radius_upper_right) ?: "0px",
             typedArray.getString(R.styleable.Base_corner_radius_lower_left) ?: "0px",
-            typedArray.getString(R.styleable.Base_corner_radius_lower_right) ?: "0px"
+            typedArray.getString(R.styleable.Base_corner_radius_lower_right) ?: "0px",
+            typedArray.getString(R.styleable.Base_selector_extra_stroke_width) ?: "0px"
         )
 
         // selector xml attributes
         selectorColor = typedArray.getColor(R.styleable.Base_selector_color, Color.WHITE)
+        selectorExtraStrokeColor = typedArray.getColor(R.styleable.Base_selector_extra_stroke_color, Color.BLACK)
         borderColor = typedArray.getColor(R.styleable.Base_border_color, Color.parseColor("#2f000000"))
         typedArray.recycle()
 
@@ -217,6 +219,9 @@ abstract class Base : View {
             cornerRadiusLowerLeft,
             cornerRadiusLowerRight
         )
+
+        // get the extra stroke width
+        selectorExtraStrokeWidth = getUnit(unitsString[8])
 
         // get the padding for the selector and set for all sides
         val paddingAll = Math.max(selectorStrokeWidth / 2f + selectorExtraStrokeWidth / 2f + selectorRadius, borderStrokeWidth / 2f)
