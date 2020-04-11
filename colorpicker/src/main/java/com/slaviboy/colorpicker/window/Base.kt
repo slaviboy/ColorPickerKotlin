@@ -150,20 +150,14 @@ abstract class Base : View {
             layoutParams.width = newWidth
             layoutParams.height = newHeight
             layoutParams = layoutParams
-
-            // call since the layout params are changed
-            this.afterMeasured {
-                afterMeasuredInit()
-            }
-        } else {
-            afterMeasuredInit()
         }
-    }
 
-    fun afterMeasuredInit() {
-        onInitBase()
-        update()
-        onRedraw()
+        // since change is made measure again and initialize
+        this.afterMeasured {
+            onInitBase()
+            update()
+            onRedraw()
+        }
     }
 
     /**
