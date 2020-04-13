@@ -135,6 +135,14 @@ class Updater(
         }
     }
 
+    fun updateTextViewTag(textView: TextView, type: Int) {
+
+        if (textViews.containsKey(textView)) {
+            textViews[textView] = type
+            updateTextView(textView)
+        }
+    }
+
     /**
      * Attach text view with preset type: hex
      * @param textViewHEX - text view with hexadecimal type
@@ -1116,7 +1124,7 @@ class Updater(
          */
         fun getType(strTag: String): Int {
             if (strTag.isNotEmpty()) {
-                when (strTag) {
+                when (strTag.toLowerCase()) {
                     "rgb" -> return TYPE_RGB
                     "rgba" -> return TYPE_RGBA
                     "rgba_r" -> return TYPE_RGBA_R
