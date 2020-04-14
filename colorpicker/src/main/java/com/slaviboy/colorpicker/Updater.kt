@@ -81,10 +81,10 @@ class Updater(
      * @param textView text view that will be attached
      * @param type text view type
      */
-    fun attachTextView(textView: TextView, type: Int) {
+    fun attachTextView(textView: TextView, type: Int, isUpdate: Boolean = false) {
 
         // make sure value is not already in the hash map
-        if (!textViews.containsKey(textView)) {
+        if (!textViews.containsKey(textView) || isUpdate) {
             textView.isSingleLine = true
 
             // add listener to detect text changes
@@ -122,6 +122,7 @@ class Updater(
                 textView.filters = arrayOf<InputFilter>(LengthFilter(7))
             } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
                 // multiple values expected
+                textView.filters = arrayOf<InputFilter>()
             } else {
                 // for single integer values limit to 3 digits
                 textView.filters = arrayOf<InputFilter>(LengthFilter(3))
@@ -131,31 +132,17 @@ class Updater(
             textViews[textView] = type
 
             // update text after it is put into the list array
-            updateTextView(textView)
+            if (!isUpdate) {
+                updateTextView(textView)
+            } else {
+                updateTextViews()
+            }
         }
     }
 
     fun updateTextViewTag(textView: TextView, type: Int) {
-
-        if (textViews.containsKey(textView)) {
-
-            if (type == TYPE_HEX) {
-                // for hex limit to 7 digits
-                textView.filters = arrayOf<InputFilter>(LengthFilter(7))
-            } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
-                // multiple values expected
-                textView.filters = arrayOf<InputFilter>()
-            } else {
-                // for single integer values limit to 3 digits
-                textView.filters = arrayOf<InputFilter>(LengthFilter(3))
-            }
-
-            textView.isCursorVisible = textView.isSelected
-            textViews[textView] = type
-
-            clearEditTextFocus()
-            updateTextViews()
-        }
+        clearEditTextFocus()
+        attachTextView(textView, type, true)
     }
 
     /**
