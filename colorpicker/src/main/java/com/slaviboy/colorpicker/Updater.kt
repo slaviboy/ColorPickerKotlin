@@ -144,6 +144,7 @@ class Updater(
                 textView.filters = arrayOf<InputFilter>(LengthFilter(7))
             } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
                 // multiple values expected
+                textView.filters =  arrayOf<InputFilter>()
             } else {
                 // for single integer values limit to 3 digits
                 textView.filters = arrayOf<InputFilter>(LengthFilter(3))
