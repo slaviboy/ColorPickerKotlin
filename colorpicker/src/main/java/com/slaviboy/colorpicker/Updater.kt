@@ -144,15 +144,17 @@ class Updater(
                 textView.filters = arrayOf<InputFilter>(LengthFilter(7))
             } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
                 // multiple values expected
-                textView.filters =  arrayOf<InputFilter>()
+                textView.filters = arrayOf<InputFilter>()
             } else {
                 // for single integer values limit to 3 digits
                 textView.filters = arrayOf<InputFilter>(LengthFilter(3))
             }
 
-            textView.isCursorVisible = false
+            textView.isCursorVisible = textView.isSelected
             textViews[textView] = type
-            updateTextView(textView)
+
+            clearEditTextFocus()
+            updateTextViews()
         }
     }
 
@@ -443,6 +445,8 @@ class Updater(
             isInnerTextChange = true
         }
 
+        clearEditTextFocus()
+
         // update color windows and text views
         updateColorWindows(colorWindow)
         updateTextViews()
@@ -454,6 +458,17 @@ class Updater(
 
         // set flag showing that inner text change was finished
         isInnerTextChange = false
+    }
+
+    /**
+     * Clear focus from all edit text.
+     */
+    fun clearEditTextFocus() {
+        textViews.forEach { (key, _) ->
+            if (key is EditText) {
+                key.clearFocus()
+            }
+        }
     }
 
     /**
@@ -638,8 +653,6 @@ class Updater(
         val type = textViews[textView]!!
         var intValue = -1
 
-        // get integer value for single text view type// convert integer to string for single value types
-
         // if there is a focused edit text then set caret at the beginning
         // get as string for multiple value type
         when (type) {
@@ -687,6 +700,8 @@ class Updater(
             }
         }
 
+        val withSuffix = !textView.isFocused
+
         // get the new string value
         val value: String
         value = if (intValue == -1) {
@@ -697,22 +712,22 @@ class Updater(
                     colorConverter.HEX
                 }
                 TYPE_RGB -> {
-                    colorConverter.getRGB(true)
+                    colorConverter.getRGB(withSuffix)
                 }
                 TYPE_RGBA -> {
-                    colorConverter.getRGBA(true)
+                    colorConverter.getRGBA(withSuffix)
                 }
                 TYPE_HSV -> {
-                    colorConverter.getHSV(true)
+                    colorConverter.getHSV(withSuffix)
                 }
                 TYPE_HSL -> {
-                    colorConverter.getHSL(true)
+                    colorConverter.getHSL(withSuffix)
                 }
                 TYPE_HWB -> {
-                    colorConverter.getHWB(true)
+                    colorConverter.getHWB(withSuffix)
                 }
                 TYPE_CMYK -> {
-                    colorConverter.getCMYK(true)
+                    colorConverter.getCMYK(withSuffix)
                 }
                 else -> {
                     ""
