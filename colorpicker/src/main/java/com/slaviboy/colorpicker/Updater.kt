@@ -138,6 +138,18 @@ class Updater(
     fun updateTextViewTag(textView: TextView, type: Int) {
 
         if (textViews.containsKey(textView)) {
+
+            if (type == TYPE_HEX) {
+                // for hex limit to 7 digits
+                textView.filters = arrayOf<InputFilter>(LengthFilter(7))
+            } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
+                // multiple values expected
+            } else {
+                // for single integer values limit to 3 digits
+                textView.filters = arrayOf<InputFilter>(LengthFilter(3))
+            }
+
+            textView.isCursorVisible = false
             textViews[textView] = type
             updateTextView(textView)
         }
