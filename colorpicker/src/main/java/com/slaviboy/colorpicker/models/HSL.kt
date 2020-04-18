@@ -1,5 +1,7 @@
 package com.slaviboy.colorpicker.models
 
+import com.slaviboy.colorpicker.converter.ColorConverter
+
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
 //
@@ -19,59 +21,88 @@ package com.slaviboy.colorpicker.models
 /**
  * Class that represents HSL(HUE, SATURATION and LIGHTNESS) color model
  * and hold individual value for given color.
- * @param h hue [0,360]
- * @param s saturation [0,100]
- * @param l lightness [0,100]
+ * @param colorConverter color converter that is used to update the other color models
  */
-class HSL(
-    var h: Int = 0,
-    var s: Int = 0,
+class HSL(var colorConverter: ColorConverter) {
+
+    // hue [0,360]
+    var h: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSL)
+        }
+
+    // saturation [0,100]
+    var s: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSL)
+        }
+
+    // lightness [0,100]
     var l: Int = 0
-) {
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSL)
+        }
 
     var hSuffix = H_SUFFIX
     var sSuffix = S_SUFFIX
     var lSuffix = L_SUFFIX
 
     /**
-     * Constructor that set values using HSL object.
-     * @param hsl - hsl object
+     * Constructor that set values using HSL values.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param h hue [0,360]
+     * @param s saturation [0,100]
+     * @param l lightness [0,100]
      */
-    constructor(hsl: HSL) : this(hsl.h, hsl.s, hsl.l)
+    constructor(colorConverter: ColorConverter, h: Int = 0, s: Int = 0, v: Int = 0) : this(colorConverter) {
+        setHSL(h, s, v)
+    }
+
+    /**
+     * Constructor that set values using HSL object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param hsl hsl object
+     */
+    constructor(colorConverter: ColorConverter, hsl: HSL) : this(colorConverter, hsl.h, hsl.s, hsl.l)
 
     /**
      * Public setter that sets initial values using HSL object.
-     * @param hsl - existing hsl object
+     * @param hsl existing hsl object
      */
     fun setHSL(hsl: HSL) {
-        h = hsl.h
-        s = hsl.s
-        l = hsl.l
+        setHSL(hsl.h, hsl.s, hsl.l)
     }
 
     /**
      * Public setter that sets HSL object using individual values.
-     * @param h - hue
-     * @param s - saturation
-     * @param l - lightness
+     * @param h hue
+     * @param s saturation
+     * @param l lightness
      */
-    fun setHSL(h: Int, s: Int, l: Int) {
+    fun setHSL(h: Int = this.h, s: Int = this.s, l: Int = this.l) {
+
+        // do not convert models for each set value separately
+        colorConverter.isConvertMode = false
+
         this.h = h
         this.s = s
         this.l = l
+
+        // update after all values are set
+        colorConverter.isConvertMode = true
+        colorConverter.convert(ColorConverter.MODEL_HSL)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param hSuffix - hue suffix
-     * @param sSuffix - saturation suffix
-     * @param lSuffix - lightness suffix
+     * @param hSuffix hue suffix
+     * @param sSuffix saturation suffix
+     * @param lSuffix lightness suffix
      */
-    fun setSuffix(
-        hSuffix: String,
-        sSuffix: String,
-        lSuffix: String
-    ) {
+    fun setSuffix(hSuffix: String, sSuffix: String, lSuffix: String) {
         this.hSuffix = hSuffix
         this.sSuffix = sSuffix
         this.lSuffix = lSuffix
@@ -92,7 +123,7 @@ class HSL(
     /**
      * Return string, with all corresponding value, where you can specify whether or not to
      * use suffix after each value.
-     * @param withSuffix - flag showing if suffix should be used
+     * @param withSuffix flag showing if suffix should be used
      */
     fun getString(withSuffix: Boolean = true): String {
         return if (withSuffix) {
@@ -119,7 +150,7 @@ class HSL(
 
         /**
          * Check if hue value is in range [0,360].
-         * @param h - hue value to be checked
+         * @param h hue value to be checked
          * @return boolean if value is in range
          */
         fun inRangeH(h: Int): Boolean {
@@ -128,7 +159,7 @@ class HSL(
 
         /**
          * Check if saturation value is in range [0,100].
-         * @param s - saturation value to be checked
+         * @param s saturation value to be checked
          * @return boolean if value is in range
          */
         fun inRangeS(s: Int): Boolean {
@@ -137,7 +168,7 @@ class HSL(
 
         /**
          * Check if cyan value is in range [0,100].
-         * @param l - lightness value to be checked
+         * @param l lightness value to be checked
          * @return boolean if value is in range
          */
         fun inRangeL(l: Int): Boolean {

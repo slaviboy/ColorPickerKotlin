@@ -1,5 +1,7 @@
 package com.slaviboy.colorpicker.models
 
+import com.slaviboy.colorpicker.converter.ColorConverter
+
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
 //
@@ -19,17 +21,37 @@ package com.slaviboy.colorpicker.models
 /**
  * Class that represents CMYK(CYAN, MAGENTA, YELLOW and BLACK) color model
  * and hold individual value for given color.
- * @param c cyan [0,100]
- * @param m magenta [0,100]
- * @param y yellow [0,100]
- * @param k black [0,100]
+ * @param colorConverter color converter that is used to update the other color models
  */
-class CMYK(
-    var c: Int = 0,
-    var m: Int = 0,
-    var y: Int = 0,
+class CMYK(var colorConverter: ColorConverter) {
+
+    // cyan [0,100]
+    var c: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_CMYK)
+        }
+
+    // magenta [0,100]
+    var m: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_CMYK)
+        }
+
+    // yellow [0,100]
+    var y: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_CMYK)
+        }
+
+    // black [0,100]
     var k: Int = 0
-) {
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_CMYK)
+        }
 
     var cSuffix = C_SUFFIX
     var mSuffix = M_SUFFIX
@@ -37,49 +59,62 @@ class CMYK(
     var kSuffix = K_SUFFIX
 
     /**
-     * Constructor that set values using CMYK object.
-     * @param cmyk - existing cmyk object
+     * Constructor that set values using CMYK values.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param c cyan [0,100]
+     * @param m magenta [0,100]
+     * @param y yellow [0,100]
+     * @param k black [0,100]
      */
-    constructor(cmyk: CMYK) : this(cmyk.c, cmyk.m, cmyk.y, cmyk.k)
+    constructor(colorConverter: ColorConverter, c: Int, m: Int, y: Int, k: Int) : this(colorConverter) {
+        setCMYK(c, m, y, k)
+    }
+
+    /**
+     * Constructor that set values using CMYK object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param cmyk existing cmyk object
+     */
+    constructor(colorConverter: ColorConverter, cmyk: CMYK) : this(colorConverter, cmyk.c, cmyk.m, cmyk.y, cmyk.k)
 
     /**
      * Public setter that sets initial values using CMYK object.
-     * @param cmyk - existing cmyk object
+     * @param cmyk existing cmyk object
      */
     fun setCMYK(cmyk: CMYK) {
-        c = cmyk.c
-        m = cmyk.m
-        y = cmyk.y
-        k = cmyk.k
+        setCMYK(cmyk.c, cmyk.m, cmyk.y, cmyk.k)
     }
 
     /**
      * Public setter that sets CMYK object using individual values.
-     * @param c - cyan
-     * @param m - magenta
-     * @param y - yellow
-     * @param k - black
+     * @param c cyan
+     * @param m magenta
+     * @param y yellow
+     * @param k black
      */
-    fun setCMYK(c: Int, m: Int, y: Int, k: Int) {
+    fun setCMYK(c: Int = this.c, m: Int = this.m, y: Int = this.y, k: Int = this.k) {
+
+        // do not convert models for each set value separately
+        colorConverter.isConvertMode = false
+
         this.c = c
         this.m = m
         this.y = y
         this.k = k
+
+        // update after all values are set
+        colorConverter.isConvertMode = true
+        colorConverter.convert(ColorConverter.MODEL_HWB)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param cSuffix - cyan suffix
-     * @param mSuffix - magenta suffix
-     * @param ySuffix - yellow suffix
-     * @param kSuffix - black suffix
+     * @param cSuffix cyan suffix
+     * @param mSuffix magenta suffix
+     * @param ySuffix yellow suffix
+     * @param kSuffix black suffix
      */
-    fun setSuffix(
-        cSuffix: String,
-        mSuffix: String,
-        ySuffix: String,
-        kSuffix: String
-    ) {
+    fun setSuffix(cSuffix: String, mSuffix: String, ySuffix: String, kSuffix: String) {
         this.cSuffix = cSuffix
         this.mSuffix = mSuffix
         this.ySuffix = ySuffix
@@ -101,7 +136,7 @@ class CMYK(
     /**
      * Return string, with all corresponding value, where you can specify whether or not to
      * use suffix after each value.
-     * @param withSuffix - flag showing if suffix should be used
+     * @param withSuffix flag showing if suffix should be used
      */
     fun getString(withSuffix: Boolean = true): String {
         return if (withSuffix) {
@@ -131,7 +166,7 @@ class CMYK(
 
         /**
          * Check if cyan value is in range [0,100].
-         * @param c - cyan value to be checked
+         * @param c cyan value to be checked
          * @return boolean if value is in range
          */
         fun inRangeC(c: Int): Boolean {
@@ -140,7 +175,7 @@ class CMYK(
 
         /**
          * Check if magenta value is in range [0,100].
-         * @param m - magenta value to be checked
+         * @param m magenta value to be checked
          * @return boolean if value is in range
          */
         fun inRangeM(m: Int): Boolean {
@@ -149,7 +184,7 @@ class CMYK(
 
         /**
          * Check if yellow value is in range [0,100].
-         * @param y - yellow value to be checked
+         * @param y yellow value to be checked
          * @return boolean if value is in range
          */
         fun inRangeY(y: Int): Boolean {
@@ -158,7 +193,7 @@ class CMYK(
 
         /**
          * Check if black value is in range [0,100].
-         * @param k - black value to be checked
+         * @param k black value to be checked
          * @return boolean if value is in range
          */
         fun inRangeK(k: Int): Boolean {

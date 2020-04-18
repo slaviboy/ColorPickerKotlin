@@ -111,7 +111,7 @@ class CircularHS : Circular {
         layersCanvas.drawBitmap(baseLayer, 0f, 0f, layersPaint)
 
         // draw dimming circle
-        val opacity = 255 - (255 * (colorConverter.v / 100.0)).toInt()
+        val opacity = 255 - (255 * (colorConverter.hsv.v / 100.0)).toInt()
 
         layersPaint.apply {
             shader = null
@@ -183,6 +183,6 @@ class CircularHS : Circular {
     }
 
     override fun update() {
-        setHS(colorConverter.h, colorConverter.getS(ColorConverter.MODEL_HSV))
+        setHS(colorConverter.hsv.h, colorConverter.hsv.s)
     }
 }

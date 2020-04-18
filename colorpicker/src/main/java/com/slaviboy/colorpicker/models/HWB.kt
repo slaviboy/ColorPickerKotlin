@@ -1,5 +1,7 @@
 package com.slaviboy.colorpicker.models
 
+import com.slaviboy.colorpicker.converter.ColorConverter
+
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
 //
@@ -19,55 +21,88 @@ package com.slaviboy.colorpicker.models
 /**
  * Class that represents HWB(HUE, WHITE and BLACK) color model
  * and hold individual value for given color.
- * @param h hue [0,360]
- * @param w white [0,100]
- * @param b black [0,100]
+ * @param colorConverter color converter that is used to update the other color models
  */
-class HWB(var h: Int = 0, var w: Int = 0, var b: Int = 0) {
+class HWB(var colorConverter: ColorConverter) {
+
+    // hue [0,360]
+    var h: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HWB)
+        }
+
+    // white [0,100]
+    var w: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HWB)
+        }
+
+    // black [0,100]
+    var b: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HWB)
+        }
 
     var hSuffix = H_SUFFIX
     var wSuffix = W_SUFFIX
     var bSuffix = B_SUFFIX
 
     /**
-     * Constructor that set values using HWB object.
-     * @param hwb - hwb object
+     * Constructor that set values using HWB values.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param h hue [0,360]
+     * @param w white [0,100]
+     * @param b black [0,100]
      */
-    constructor(hwb: HWB) : this(hwb.h, hwb.w, hwb.b)
+    constructor(colorConverter: ColorConverter, h: Int = 0, w: Int = 0, b: Int = 0) : this(colorConverter) {
+        setHWB(h, w, b)
+    }
+
+    /**
+     * Constructor that set values using HWB object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param hwb hwb object
+     */
+    constructor(colorConverter: ColorConverter, hwb: HWB) : this(colorConverter, hwb.h, hwb.w, hwb.b)
 
     /**
      * Public setter that sets initial values using HWB object.
-     * @param hwb - existing hwb object
+     * @param hwb existing hwb object
      */
     fun setHWB(hwb: HWB) {
-        h = hwb.h
-        w = hwb.w
-        b = hwb.b
+        setHWB(hwb.h, hwb.w, hwb.b)
     }
 
     /**
      * Public setter that sets HWB object using individual values.
-     * @param h - hue
-     * @param w - white
-     * @param b - black
+     * @param h hue
+     * @param w white
+     * @param b black
      */
-    fun setHWB(h: Int, w: Int, b: Int) {
+    fun setHWB(h: Int = this.h, w: Int = this.w, b: Int = this.b) {
+
+        // do not convert models for each set value separately
+        colorConverter.isConvertMode = false
+
         this.h = h
         this.w = w
         this.b = b
+
+        // update after all values are set
+        colorConverter.isConvertMode = true
+        colorConverter.convert(ColorConverter.MODEL_HWB)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param hSuffix - hue suffix
-     * @param wSuffix - white suffix
-     * @param bSuffix - black suffix
+     * @param hSuffix hue suffix
+     * @param wSuffix white suffix
+     * @param bSuffix black suffix
      */
-    fun setSuffix(
-        hSuffix: String,
-        wSuffix: String,
-        bSuffix: String
-    ) {
+    fun setSuffix(hSuffix: String, wSuffix: String, bSuffix: String) {
         this.hSuffix = hSuffix
         this.wSuffix = wSuffix
         this.bSuffix = bSuffix
@@ -115,7 +150,7 @@ class HWB(var h: Int = 0, var w: Int = 0, var b: Int = 0) {
 
         /**
          * Check if hue value is in range [0,360].
-         * @param h - hue value to be checked
+         * @param h hue value to be checked
          * @return boolean if value is in range
          */
         fun inRangeH(h: Int): Boolean {
@@ -124,7 +159,7 @@ class HWB(var h: Int = 0, var w: Int = 0, var b: Int = 0) {
 
         /**
          * Check if white value is in range [0,100].
-         * @param w - white value to be checked
+         * @param w white value to be checked
          * @return boolean if value is in range
          */
         fun inRangeW(w: Int): Boolean {
@@ -133,7 +168,7 @@ class HWB(var h: Int = 0, var w: Int = 0, var b: Int = 0) {
 
         /**
          * Check if black value is in range [0,100].
-         * @param b - black value to be checked
+         * @param b black value to be checked
          * @return boolean if value is in range
          */
         fun inRangeB(b: Int): Boolean {

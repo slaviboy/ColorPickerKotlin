@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         val r = range.random()
         val g = range.random()
         val b = range.random()
-        colorConverter.setRGBA(r, g, b, (1..100).random())
+        colorConverter.rgba.setRGBA(r, g, b, (1..100).random())
         updater.updateViews()
 
         Log.i("color-picker", "$r, $g, $b")

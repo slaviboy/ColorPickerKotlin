@@ -157,6 +157,6 @@ class RectangularSL : Rectangular {
     }
 
     override fun update() {
-        setSL(colorConverter.getS(ColorConverter.MODEL_HSL), colorConverter.l)
+        setSL(colorConverter.hsl.s, colorConverter.hsl.l)
     }
 }

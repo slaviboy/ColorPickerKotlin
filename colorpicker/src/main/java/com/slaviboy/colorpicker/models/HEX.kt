@@ -1,6 +1,7 @@
 package com.slaviboy.colorpicker.models
 
 import android.graphics.Color
+import com.slaviboy.colorpicker.converter.ColorConverter
 
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
@@ -21,22 +22,9 @@ import android.graphics.Color
 /**
  * Class that hold HEX(HEXADECIMAL) representation for a given color, both as hex string
  * and as integer representation for the current color.
+ * @param colorConverter color converter that is used to update the other color models
  */
-class HEX() {
-
-    /**
-     * Constructor that set values using hex object.
-     * @param hex - existing hexadecimal object
-     */
-    constructor(hex: HEX) : this(hex.hexString)
-
-    /**
-     * Constructor that set values using hex object.
-     * @param hexString - hexadecimal string in format #RRGGBB or #AARRGGBB
-     */
-    constructor(hexString: String) : this() {
-        this.hexString = hexString
-    }
+class HEX(var colorConverter: ColorConverter) {
 
     var color: Int = Color.BLACK
     var hexString: String = "#000000"
@@ -47,9 +35,27 @@ class HEX() {
 
             field = if (value.length == 9) {
                 // remove the alpha channel from the string
-                "#" + value.substring(3, 9)
-            } else value
+                "#" + value.substring(3, 9).toUpperCase()
+            } else value.toUpperCase()
+
+            colorConverter.convert(ColorConverter.MODEL_HEX)
         }
+
+    /**
+     * Constructor that set values using hex object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param hex hexadecimal object
+     */
+    constructor(colorConverter: ColorConverter, hex: HEX) : this(colorConverter, hex.hexString)
+
+    /**
+     * Constructor that set values using hex object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param hexString hexadecimal string in format #RRGGBB or #AARRGGBB
+     */
+    constructor(colorConverter: ColorConverter, hexString: String) : this(colorConverter) {
+        this.hexString = hexString
+    }
 
     /**
      * Set hex values using existing hex object.
@@ -68,8 +74,8 @@ class HEX() {
         /**
          * Check if hex string values is correct, by removing all non-hexadecimal character and
          * check for the new string length.
-         * @param hex - hex string to be checked
-         * @return - boolean flag showing if hex string is correct
+         * @param hex hexadecimal string to be checked
+         * @return whether hexadecimal string is correct
          */
         fun isHEX(hex: String): Boolean {
             val newHEX = hex.replace("[^a-f0-9A-F]+".toRegex(), "")

@@ -92,6 +92,6 @@ class SliderH : Slider {
     }
 
     override fun update() {
-        setH(colorConverter.h)
+        setH(colorConverter.hsv.h)
     }
 }

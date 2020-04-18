@@ -1,6 +1,7 @@
 package com.slaviboy.colorpicker.models
 
 import android.graphics.Color
+import com.slaviboy.colorpicker.converter.ColorConverter
 
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
@@ -22,73 +23,116 @@ import android.graphics.Color
  * Class that represents RGBA(RED, GREEN, BLUE and ALPHA) color model
  * and hold individual value for given color. This is the only model that
  * holds the alpha value, so when needed its is get from here.
- * @param r red [0,255]
- * @param g green [0,255]
- * @param b blue [0,255]
- * @param a alpha [0,100]
+ * @param colorConverter color converter that is used to update the other color models
  */
-class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
+class RGBA(val colorConverter: ColorConverter) {
 
+    // red [0,255]
+    var r: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_RGBA)
+        }
+
+    // green [0,255]
+    var g: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_RGBA)
+        }
+
+    // blue [0,255]
+    var b: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_RGBA)
+        }
+
+    // alpha [0,100], used only in RGBA model thus its not used in the conversion
+    var a: Int = 100
+
+    // suffix for each value, used when toString method is returned
     var rSuffix = R_SUFFIX
     var gSuffix = G_SUFFIX
     var bSuffix = B_SUFFIX
     var aSuffix = A_SUFFIX
 
     /**
-     * Constructor that set values using RGBA object.
-     * @param rgba - rgba object
+     * Constructor that set values using r, g, b and a values.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param r red [0,255]
+     * @param g green [0,255]
+     * @param b blue [0,255]
+     * @param a alpha [0,100]
      */
-    constructor(rgba: RGBA) : this(rgba.r, rgba.g, rgba.b, rgba.a)
-
-    /**
-     * Public setter that sets initial values using RGBA object.
-     * @param rgba - existing rgba object
-     */
-    fun setRGBA(rgba: RGBA) {
-        r = rgba.r
-        g = rgba.g
-        b = rgba.b
-        a = rgba.a
+    constructor(colorConverter: ColorConverter, r: Int, g: Int, b: Int, a: Int) : this(colorConverter) {
+        setRGBA(r, g, b, a)
     }
 
     /**
-     * Public setter that sets RGBA object using individual values.
-     * @param r - red
-     * @param g - green
-     * @param b - blue
+     * Constructor that set values using RGBA object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param rgba rgba object
      */
-    fun setRGBA(r: Int, g: Int, b: Int) {
+    constructor(colorConverter: ColorConverter, rgba: RGBA) : this(colorConverter, rgba.r, rgba.g, rgba.b, rgba.a)
+
+    /**
+     * Public setter that sets initial values using RGBA object.
+     * @param rgba existing rgba object
+     */
+    fun setRGBA(rgba: RGBA) {
+        setRGBA(rgba.r, rgba.g, rgba.b, rgba.a)
+    }
+
+    /**
+     * Public setter that sets initial values using integer representation
+     * @param rgba existing rgba object
+     */
+    fun setRGBA(color: Int) {
+
+        val r = Color.red(color)                             // red   [0-255]
+        val g = Color.green(color)                           // green [0-255]
+        val b = Color.blue(color)                            // blue  [0-255]
+        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
+
         setRGBA(r, g, b, a)
     }
 
     /**
      * Public setter that sets RGBA object using individual values.
-     * @param r - red
-     * @param g - green
-     * @param b - blue
-     * @param a - alpha
+     * @param r red
+     * @param g green
+     * @param b blue
+     * @param a alpha
      */
-    fun setRGBA(r: Int, g: Int, b: Int, a: Int) {
+    fun setRGBA(r: Int = this.r, g: Int = this.g, b: Int = this.b, a: Int = this.a) {
+
+        val isConvertModeLast = colorConverter.isConvertMode
+
+        // do not convert models for each set value separately
+        colorConverter.isConvertMode = false
+
         this.r = r
         this.g = g
         this.b = b
         this.a = a
+
+        // update after all values are set
+        colorConverter.isConvertMode = isConvertModeLast
+        colorConverter.convert(ColorConverter.MODEL_RGBA)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param rSuffix - red suffix
-     * @param gSuffix - green suffix
-     * @param bSuffix - blue suffix
-     * @param aSuffix - alpha suffix
+     * @param rSuffix red suffix
+     * @param gSuffix green suffix
+     * @param bSuffix blue suffix
+     * @param aSuffix alpha suffix
      */
-    fun setSuffix(
-        rSuffix: String,
-        gSuffix: String,
-        bSuffix: String,
-        aSuffix: String = ""
-    ) {
-        setSuffix(rSuffix, gSuffix, bSuffix)
+    fun setSuffix(rSuffix: String, gSuffix: String, bSuffix: String, aSuffix: String = "") {
+        this.rSuffix = rSuffix
+        this.gSuffix = gSuffix
+        this.bSuffix = bSuffix
         this.aSuffix = aSuffix
     }
 
@@ -114,8 +158,8 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
     /**
      * Return string, with all corresponding value, where you can specify whether or not to
      * use suffix after each value.
-     * @param includeAlpha - if alpha value should be included in the string
-     * @param withSuffix - flag showing if suffix should be used
+     * @param includeAlpha if alpha value should be included in the string
+     * @param withSuffix flag showing if suffix should be used
      */
     fun getString(includeAlpha: Boolean = true, withSuffix: Boolean = true): String {
         return if (includeAlpha) {
@@ -153,7 +197,7 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
 
         /**
          * Check if red value is in range [0,255].
-         * @param r - red value to be checked
+         * @param r red value to be checked
          * @return boolean if value is in range
          */
         fun inRangeR(r: Int): Boolean {
@@ -162,7 +206,7 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
 
         /**
          * Check if green value is in range [0,255].
-         * @param g - green value to be checked
+         * @param g green value to be checked
          * @return boolean if value is in range
          */
         fun inRangeG(g: Int): Boolean {
@@ -171,7 +215,7 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
 
         /**
          * Check if blue value is in range [0,255].
-         * @param b - blue value to be checked
+         * @param b blue value to be checked
          * @return boolean if value is in range
          */
         fun inRangeB(b: Int): Boolean {
@@ -180,7 +224,7 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
 
         /**
          * Check if alpha value is in range [0,100].
-         * @param a - alpha value to be checked
+         * @param a alpha value to be checked
          * @return boolean if value is in range
          */
         fun inRangeA(a: Int): Boolean {

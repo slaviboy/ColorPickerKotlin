@@ -1,5 +1,7 @@
 package com.slaviboy.colorpicker.models
 
+import com.slaviboy.colorpicker.converter.ColorConverter
+
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
 //
@@ -19,55 +21,88 @@ package com.slaviboy.colorpicker.models
 /**
  * Class that represents HSV(HUE, SATURATION and VALUE) color model
  * and hold individual value for given color.
- * @param h hue [0,360]
- * @param s saturation [0,100]
- * @param v value [0,100]
+ * @param colorConverter color converter that is used to update the other color models
  */
-class HSV(var h: Int = 0, var s: Int = 0, var v: Int = 0) {
+class HSV(var colorConverter: ColorConverter) {
+
+    // hue [0,360]
+    var h: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSV)
+        }
+
+    // saturation [0,100]
+    var s: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSV)
+        }
+
+    // value [0,100]
+    var v: Int = 0
+        set(value) {
+            field = value
+            colorConverter.convert(ColorConverter.MODEL_HSV)
+        }
 
     var hSuffix = H_SUFFIX
     var sSuffix = S_SUFFIX
     var vSuffix = V_SUFFIX
 
     /**
-     * Constructor that set values using HSV object.
-     * @param hsv - hsv object
+     * Constructor that set values using HSV values.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param h hue [0,360]
+     * @param s saturation [0,100]
+     * @param v value [0,100]
      */
-    constructor(hsv: HSV) : this(hsv.h, hsv.s, hsv.v)
+    constructor(colorConverter: ColorConverter, h: Int = 0, s: Int = 0, v: Int = 0) : this(colorConverter) {
+        setHSV(h, s, v)
+    }
+
+    /**
+     * Constructor that set values using HSV object.
+     * @param colorConverter color converter that is used to update the other color models
+     * @param hsv hsv object
+     */
+    constructor(colorConverter: ColorConverter, hsv: HSV) : this(colorConverter, hsv.h, hsv.s, hsv.v)
 
     /**
      * Public setter that sets initial values using HSV object.
-     * @param hsv - existing hsv object
+     * @param hsv existing hsv object
      */
     fun setHSV(hsv: HSV) {
-        h = hsv.h
-        s = hsv.s
-        v = hsv.v
+        setHSV(hsv.h, hsv.s, hsv.v)
     }
 
     /**
      * Public setter that sets HSV object using individual values.
-     * @param h - hue
-     * @param s - saturation
-     * @param v - value
+     * @param h hue
+     * @param s saturation
+     * @param v value
      */
-    fun setHSV(h: Int, s: Int, v: Int) {
+    fun setHSV(h: Int = this.h, s: Int= this.s, v: Int= this.v) {
+
+        // do not convert models for each set value separately
+        colorConverter.isConvertMode = false
+
         this.h = h
         this.s = s
         this.v = v
+
+        // update after all values are set
+        colorConverter.isConvertMode = true
+        colorConverter.convert(ColorConverter.MODEL_HSV)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param hSuffix - hue suffix
-     * @param sSuffix - saturation suffix
-     * @param vSuffix - value suffix
+     * @param hSuffix hue suffix
+     * @param sSuffix saturation suffix
+     * @param vSuffix value suffix
      */
-    fun setSuffix(
-        hSuffix: String,
-        sSuffix: String,
-        vSuffix: String
-    ) {
+    fun setSuffix(hSuffix: String, sSuffix: String, vSuffix: String) {
         this.hSuffix = hSuffix
         this.sSuffix = sSuffix
         this.vSuffix = vSuffix
@@ -88,7 +123,7 @@ class HSV(var h: Int = 0, var s: Int = 0, var v: Int = 0) {
     /**
      * Return string, with all corresponding value, where you can specify whether or not to
      * use suffix after each value.
-     * @param withSuffix - flag showing if suffix should be used
+     * @param withSuffix flag showing if suffix should be used
      */
     fun getString(withSuffix: Boolean = true): String {
         return if (withSuffix) {
@@ -115,7 +150,7 @@ class HSV(var h: Int = 0, var s: Int = 0, var v: Int = 0) {
 
         /**
          * Check if hue value is in range [0,360].
-         * @param h - hue value to be checked
+         * @param h hue value to be checked
          * @return boolean if value is in range
          */
         fun inRangeH(h: Int): Boolean {
@@ -124,7 +159,7 @@ class HSV(var h: Int = 0, var s: Int = 0, var v: Int = 0) {
 
         /**
          * Check if saturation value is in range [0,100].
-         * @param s - saturation value to be checked
+         * @param s saturation value to be checked
          * @return boolean if value is in range
          */
         fun inRangeS(s: Int): Boolean {
@@ -133,7 +168,7 @@ class HSV(var h: Int = 0, var s: Int = 0, var v: Int = 0) {
 
         /**
          * Check if 'value' value is in range [0,100].
-         * @param v - 'value' value to be checked
+         * @param v 'value' value to be checked
          * @return boolean if value is in range
          */
         fun inRangeV(v: Int): Boolean {

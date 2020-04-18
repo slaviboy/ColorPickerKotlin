@@ -42,10 +42,10 @@ class ColorHolder(
     override fun onConvert(colorConverter: ColorConverter) {
 
         // get the channels red, green, blue and hue
-        val r: Int = colorConverter.r
-        val g: Int = colorConverter.g
-        val b: Int = colorConverter.getB(ColorConverter.MODEL_RGBA)
-        val h: Int = colorConverter.h
+        val r: Int = colorConverter.rgba.r
+        val g: Int = colorConverter.rgba.g
+        val b: Int = colorConverter.rgba.b
+        val h: Int = colorConverter.hsv.h
 
         // set selector fill color (color picker color)
         selectedColor = ColorConverter.RGBtoColor(r, g, b)

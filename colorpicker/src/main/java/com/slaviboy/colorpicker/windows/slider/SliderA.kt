@@ -110,7 +110,7 @@ class SliderA : Slider {
     override fun drawSelector(canvas: Canvas) {
 
         // set fill color
-        val fillColor = ColorConverter.HSVAtoColor(colorConverter.h, 100, 100, colorConverter.a)
+        val fillColor = ColorConverter.HSVAtoColor(colorConverter.hsv.h, 100, 100, colorConverter.rgba.a)
         selectorPaint.color = fillColor
         selectorPaint.style = Paint.Style.FILL
         canvas.drawCircle(selectorX, selectorY, selectorRadius, selectorPaint)
@@ -173,6 +173,6 @@ class SliderA : Slider {
     }
 
     override fun update() {
-        setA(colorConverter.a)
+        setA(colorConverter.rgba.a)
     }
 }

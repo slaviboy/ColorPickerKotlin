@@ -146,6 +146,6 @@ class RectangularSV : Rectangular {
     }
 
     override fun update() {
-        setSV(colorConverter.getS(ColorConverter.MODEL_HSV), colorConverter.v)
+        setSV(colorConverter.hsv.s, colorConverter.hsv.v)
     }
 }

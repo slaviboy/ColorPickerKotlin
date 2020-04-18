@@ -391,26 +391,25 @@ class Updater(
     private fun unfocus(textView: TextView, type: Int) {
 
         // set text value by including special symbols
-        val withSymbols = true
         val withSymbolsStr: String?
         withSymbolsStr = when (type) {
             TYPE_RGB -> {
-                colorConverter.getRGB(withSymbols)
+                colorConverter.rgba.getString(false)
             }
             TYPE_RGBA -> {
-                colorConverter.getRGBA(withSymbols)
+                colorConverter.rgba.toString()
             }
             TYPE_HSV -> {
-                colorConverter.getHSV(withSymbols)
+                colorConverter.hsv.toString()
             }
             TYPE_HSL -> {
-                colorConverter.getHSL(withSymbols)
+                colorConverter.hsl.toString()
             }
             TYPE_HWB -> {
-                colorConverter.getHWB(withSymbols)
+                colorConverter.hwb.toString()
             }
             TYPE_CMYK -> {
-                colorConverter.getCMYK(withSymbols)
+                colorConverter.cmyk.toString()
             }
             else -> {
                 cachedTextValue
@@ -471,8 +470,8 @@ class Updater(
 
             // hue for HSV & HSL
             val h = w.range.current.roundToInt()
-            if (colorConverter.h != h) {
-                colorConverter.h = h
+            if (colorConverter.hsv.h != h) {
+                colorConverter.hsv.h = h
 
                 // redraw and update other color windows
                 for (i in colorWindows.indices) {
@@ -491,13 +490,15 @@ class Updater(
 
             // alpha for RGBA
             val a = w.range.current.roundToInt()
-            if (colorConverter.a != a) {
-                colorConverter.a = a
+            if (colorConverter.rgba.a != a) {
+                colorConverter.rgba.a = a
 
-                // redraw and update other color windows
+                // redraw and update other alpha color windows
                 for (i in colorWindows.indices) {
                     val tempWindow = colorWindows[i]
-                    (tempWindow as? SliderA)?.update()
+                    if (tempWindow is SliderA) {
+                        tempWindow.update()
+                    }
                 }
             }
         } else if (colorWindow is SliderV) {
@@ -505,8 +506,8 @@ class Updater(
 
             // value for HSV
             val v = w.range.current.roundToInt()
-            if (colorConverter.v != v) {
-                colorConverter.v = v
+            if (colorConverter.hsv.v != v) {
+                colorConverter.hsv.v = v
 
                 // redraw and update other color windows
                 for (i in colorWindows.indices) {
@@ -528,9 +529,9 @@ class Updater(
             // saturation and value for HSV
             val v = w.verticalRange.current.roundToInt()
             val s = w.horizontalRange.current.roundToInt()
-            if (colorConverter.v != v || colorConverter.getS(ColorConverter.MODEL_HSV) != s) {
+            if (colorConverter.hsv.v != v || colorConverter.hsv.s != s) {
 
-                colorConverter.setHSV(colorConverter.h, s, v)
+                colorConverter.hsv.setHSV(s = s, v = v)
 
                 // redraw and update other color windows
                 for (i in colorWindows.indices) {
@@ -553,9 +554,9 @@ class Updater(
             // saturation and lightness for HSL
             val l = w.verticalRange.current.roundToInt()
             val s = w.horizontalRange.current.roundToInt()
-            if (colorConverter.l != l || colorConverter.getS(ColorConverter.MODEL_HSL) != s) {
+            if (colorConverter.hsl.l != l || colorConverter.hsl.s != s) {
 
-                colorConverter.setHSL(colorConverter.h, s, l)
+                colorConverter.hsl.setHSL(s = s, l = l)
 
                 // redraw and update other color windows
                 for (i in colorWindows.indices) {
@@ -575,12 +576,12 @@ class Updater(
         } else if (colorWindow is CircularHS) {
             val w = colorWindow as Circular
 
-            // saturation and hude for HSV
+            // saturation and hue for HSV
             val s = w.distanceRange.current.roundToInt()
             val h = w.angleRange.current.roundToInt()
-            if (colorConverter.h != h || colorConverter.getS(ColorConverter.MODEL_HSV) != s) {
+            if (colorConverter.hsl.h != h || colorConverter.hsv.s != s) {
 
-                colorConverter.setHSV(h, s, colorConverter.v)
+                colorConverter.hsv.setHSV(h, s)
 
                 // redraw and update other color windows
                 for (i in colorWindows.indices) {
@@ -644,46 +645,46 @@ class Updater(
         // get as string for multiple value type
         when (type) {
             TYPE_RGBA_R -> {
-                intValue = colorConverter.r
+                intValue = colorConverter.rgba.r
             }
             TYPE_RGBA_G -> {
-                intValue = colorConverter.g
+                intValue = colorConverter.rgba.g
             }
             TYPE_RGBA_B -> {
-                intValue = colorConverter.getB(ColorConverter.MODEL_RGBA)
+                intValue = colorConverter.rgba.b
             }
             TYPE_RGBA_A -> {
-                intValue = colorConverter.a
+                intValue = colorConverter.rgba.a
             }
             TYPE_HSV_H -> {
-                intValue = colorConverter.h
+                intValue = colorConverter.hsv.h
             }
             TYPE_HSV_S -> {
-                intValue = colorConverter.getS(ColorConverter.MODEL_HSV)
+                intValue = colorConverter.hsv.s
             }
             TYPE_HSV_V -> {
-                intValue = colorConverter.v
+                intValue = colorConverter.hsv.v
             }
             TYPE_HSL_H -> {
-                intValue = colorConverter.h
+                intValue = colorConverter.hsl.h
             }
             TYPE_HSL_S -> {
-                intValue = colorConverter.getS(ColorConverter.MODEL_HSL)
+                intValue = colorConverter.hsl.s
             }
             TYPE_HSL_L -> {
-                intValue = colorConverter.l
+                intValue = colorConverter.hsl.l
             }
             TYPE_CMYK_C -> {
-                intValue = colorConverter.c
+                intValue = colorConverter.cmyk.c
             }
             TYPE_CMYK_M -> {
-                intValue = colorConverter.m
+                intValue = colorConverter.cmyk.m
             }
             TYPE_CMYK_Y -> {
-                intValue = colorConverter.y
+                intValue = colorConverter.cmyk.y
             }
             TYPE_CMYK_K -> {
-                intValue = colorConverter.k
+                intValue = colorConverter.cmyk.k
             }
         }
 
@@ -696,25 +697,25 @@ class Updater(
             // get as string for multiple value type
             when (type) {
                 TYPE_HEX -> {
-                    colorConverter.HEX
+                    colorConverter.hex.hexString
                 }
                 TYPE_RGB -> {
-                    colorConverter.getRGB(withSuffix)
+                    colorConverter.rgba.getString(false, withSuffix)
                 }
                 TYPE_RGBA -> {
-                    colorConverter.getRGBA(withSuffix)
+                    colorConverter.rgba.getString(true, withSuffix)
                 }
                 TYPE_HSV -> {
-                    colorConverter.getHSV(withSuffix)
+                    colorConverter.hsv.getString(withSuffix)
                 }
                 TYPE_HSL -> {
-                    colorConverter.getHSL(withSuffix)
+                    colorConverter.hsl.getString(withSuffix)
                 }
                 TYPE_HWB -> {
-                    colorConverter.getHWB(withSuffix)
+                    colorConverter.hwb.getString(withSuffix)
                 }
                 TYPE_CMYK -> {
-                    colorConverter.getCMYK(withSuffix)
+                    colorConverter.cmyk.getString(withSuffix)
                 }
                 else -> {
                     ""
@@ -845,7 +846,7 @@ class Updater(
 
         // make sure hex string length is matched
         if (newText.length == 7) {
-            colorConverter.HEX = newText
+            colorConverter.hex.hexString = newText
             isCorrect = true
         }
 
@@ -896,8 +897,8 @@ class Updater(
             if (totalValues == 3 && RGBA.inRangeR(intValues[0]) &&
                 RGBA.inRangeG(intValues[1]) && RGBA.inRangeB(intValues[2])
             ) {
-                colorConverter.setRGB(intValues[0], intValues[1], intValues[2])
-                newText = colorConverter.getRGB(false)
+                colorConverter.rgba.setRGBA(intValues[0], intValues[1], intValues[2])
+                newText = colorConverter.rgba.getString(false, false)
                 isCorrect = true
             } else {
                 newText = cachedTextValue
@@ -909,8 +910,8 @@ class Updater(
                 RGBA.inRangeR(intValues[0]) && RGBA.inRangeG(intValues[1]) &&
                 RGBA.inRangeB(intValues[2]) && RGBA.inRangeA(intValues[3])
             ) {
-                colorConverter.setRGBA(intValues[0], intValues[1], intValues[2], intValues[3])
-                newText = colorConverter.getRGBA(false)
+                colorConverter.rgba.setRGBA(intValues[0], intValues[1], intValues[2], intValues[3])
+                newText = colorConverter.rgba.getString(true, false)
                 isCorrect = true
             } else {
                 newText = cachedTextValue
@@ -921,8 +922,8 @@ class Updater(
             if (totalValues == 3 && HSV.inRangeH(intValues[0]) &&
                 HSV.inRangeS(intValues[1]) && HSV.inRangeV(intValues[2])
             ) {
-                colorConverter.setHSV(intValues[0], intValues[1], intValues[2])
-                newText = colorConverter.getHSV(false)
+                colorConverter.hsv.setHSV(intValues[0], intValues[1], intValues[2])
+                newText = colorConverter.hsv.getString(false)
                 isCorrect = true
             } else {
                 newText = cachedTextValue
@@ -933,8 +934,8 @@ class Updater(
             if (totalValues == 3 && HSL.inRangeH(intValues[0]) &&
                 HSL.inRangeS(intValues[1]) && HSL.inRangeL(intValues[2])
             ) {
-                colorConverter.setHSL(intValues[0], intValues[1], intValues[2])
-                newText = colorConverter.getHSL(false)
+                colorConverter.hsl.setHSL(intValues[0], intValues[1], intValues[2])
+                newText = colorConverter.hsl.getString(false)
                 isCorrect = true
             } else {
                 newText = cachedTextValue
@@ -946,8 +947,8 @@ class Updater(
                 CMYK.inRangeC(intValues[0]) && CMYK.inRangeM(intValues[1]) &&
                 CMYK.inRangeY(intValues[2]) && CMYK.inRangeK(intValues[3])
             ) {
-                colorConverter.setCMYK(intValues[0], intValues[1], intValues[2], intValues[3])
-                newText = colorConverter.getCMYK(false)
+                colorConverter.cmyk.setCMYK(intValues[0], intValues[1], intValues[2], intValues[3])
+                newText = colorConverter.cmyk.getString(false)
                 isCorrect = true
             } else {
                 newText = cachedTextValue
@@ -987,87 +988,87 @@ class Updater(
         if (type == TYPE_RGBA_R) {
             inRange = RGBA.inRangeR(value)
             if (inRange) {
-                colorConverter.r = value
+                colorConverter.rgba.r = value
             }
         } else if (type == TYPE_RGBA_G) {
             inRange = RGBA.inRangeG(value)
             if (inRange) {
-                colorConverter.g = value
+                colorConverter.rgba.g = value
             }
         } else if (type == TYPE_RGBA_B) {
             inRange = RGBA.inRangeB(value)
             if (inRange) {
-                colorConverter.setB(value, ColorConverter.MODEL_RGBA)
+                colorConverter.rgba.b = value
             }
         } else if (type == TYPE_RGBA_A) {
             inRange = RGBA.inRangeA(value)
             if (inRange) {
-                colorConverter.a = value
+                colorConverter.rgba.a = value
             }
         } else if (type == TYPE_HSV_H) {
             inRange = HSV.inRangeH(value)
             if (inRange) {
-                colorConverter.h = value
+                colorConverter.hsv.h = value
             }
         } else if (type == TYPE_HSV_S) {
             inRange = HSV.inRangeS(value)
             if (inRange) {
-                colorConverter.setS(value, ColorConverter.MODEL_HSV)
+                colorConverter.hsv.s = value
             }
         } else if (type == TYPE_HSV_V) {
             inRange = HSV.inRangeV(value)
             if (inRange) {
-                colorConverter.v = value
+                colorConverter.hsv.v = value
             }
         } else if (type == TYPE_HSL_H) {
             inRange = HSL.inRangeH(value)
             if (inRange) {
-                colorConverter.h = value
+                colorConverter.hsl.h = value
             }
         } else if (type == TYPE_HSL_S) {
             inRange = HSL.inRangeS(value)
             if (inRange) {
-                colorConverter.setS(value, ColorConverter.MODEL_HSL)
+                colorConverter.hsl.s = value
             }
         } else if (type == TYPE_HSL_L) {
             inRange = HSL.inRangeL(value)
             if (inRange) {
-                colorConverter.l = value
+                colorConverter.hsl.l = value
             }
         } else if (type == TYPE_HWB_H) {
             inRange = HWB.inRangeH(value)
             if (inRange) {
-                colorConverter.h = value
+                colorConverter.hwb.h = value
             }
         } else if (type == TYPE_HWB_W) {
             inRange = HWB.inRangeW(value)
             if (inRange) {
-                colorConverter.w = value
+                colorConverter.hwb.w = value
             }
         } else if (type == TYPE_HWB_B) {
             inRange = HWB.inRangeB(value)
             if (inRange) {
-                colorConverter.setB(value, ColorConverter.MODEL_HWB)
+                colorConverter.hwb.b = value
             }
         } else if (type == TYPE_CMYK_C) {
             inRange = CMYK.inRangeC(value)
             if (inRange) {
-                colorConverter.c = value
+                colorConverter.cmyk.c = value
             }
         } else if (type == TYPE_CMYK_M) {
             inRange = CMYK.inRangeM(value)
             if (inRange) {
-                colorConverter.m = value
+                colorConverter.cmyk.m = value
             }
         } else if (type == TYPE_CMYK_Y) {
             inRange = CMYK.inRangeY(value)
             if (inRange) {
-                colorConverter.y = value
+                colorConverter.cmyk.y = value
             }
         } else if (type == TYPE_CMYK_K) {
             inRange = CMYK.inRangeK(value)
             if (inRange) {
-                colorConverter.k = value
+                colorConverter.cmyk.k = value
             }
         }
 

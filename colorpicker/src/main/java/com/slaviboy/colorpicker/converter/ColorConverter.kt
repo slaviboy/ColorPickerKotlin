@@ -27,13 +27,17 @@ import kotlin.math.roundToInt
  */
 class ColorConverter {
 
-    private lateinit var rgba: RGBA                             // rgba(red, green, blue, alpha) model object
-    private lateinit var cmyk: CMYK                             // cmyk(cyan, magenta, yellow, black) model object
-    private lateinit var hsl: HSL                               // hsl(hue, saturation, lightness) model object
-    private lateinit var hsv: HSV                               // hsv(hue, saturation, value) model object
-    private lateinit var hwb: HWB                               // hwb(hue, white, black) model object
-    private lateinit var hex: HEX                               // hex(hexadecimal) model object
-    private lateinit var onConvertListener: OnConvertListener   // listener with method that is called when, conversion for all used models is done
+    var rgba: RGBA   // rgba(red, green, blue, alpha) model object
+    var cmyk: CMYK   // cmyk(cyan, magenta, yellow, black) model object
+    var hsl: HSL     // hsl(hue, saturation, lightness) model object
+    var hsv: HSV     // hsv(hue, saturation, value) model object
+    var hwb: HWB     // hwb(hue, white, black) model object
+    var hex: HEX     // hex(hexadecimal) model object
+
+    private lateinit var onConvertListener:   // listener with method that is called when, conversion for all used models is done
+            OnConvertListener
+
+    var isConvertMode: Boolean = true
 
     // show which model will be used in the conversion from one model to another
     private val usedModels =
@@ -68,17 +72,17 @@ class ColorConverter {
         r: Int = -1, g: Int = -1, b: Int = -1, a: Int = -1, h: Int = -1, s: Int = -1, v: Int = -1,
         l: Int = -1, c: Int = -1, m: Int = -1, y: Int = -1, k: Int = -1
     ) {
-        init()
+
         if (r != -1 && g != -1 && b != -1 && a != -1) {
-            setRGBA(r, g, b, a)
+            rgba.setRGBA(r, g, b, a)
         } else if (r != -1 && g != -1 && b != -1) {
-            setRGB(r, g, b)
+            rgba.setRGBA(r, g, b)
         } else if (h != -1 && s != -1 && v != -1) {
-            setHSV(h, s, v)
+            hsv.setHSV(h, s, v)
         } else if (h != -1 && s != -1 && l != -1) {
-            setHSL(h, s, l)
+            hsl.setHSL(h, s, l)
         } else if (c != -1 && m != -1 && y != -1 && k != -1) {
-            setCMYK(c, m, y, k)
+            cmyk.setCMYK(c, m, y, k)
         }
     }
 
@@ -88,14 +92,7 @@ class ColorConverter {
      * @param color integer representation of a color
      */
     constructor(color: Int) {
-
-        val r = Color.red(color)                             // red   [0-255]
-        val g = Color.green(color)                           // green [0-255]
-        val b = Color.blue(color)                            // blue  [0-255]
-        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
-
-        init()
-        setRGBA(r, g, b, a)
+        rgba.setRGBA(color)
     }
 
     /**
@@ -105,8 +102,7 @@ class ColorConverter {
      * @param b blue [0-255]
      */
     constructor(r: Int = 0, g: Int = 0, b: Int = 0) {
-        init()
-        setRGB(r, g, b)
+        rgba.setRGBA(r, g, b)
     }
 
     /**
@@ -117,8 +113,7 @@ class ColorConverter {
      * @param a alpha [0-100]
      */
     constructor(r: Int, g: Int, b: Int, a: Int) {
-        init()
-        setRGBA(r, g, b, a)
+        rgba.setRGBA(r, g, b, a)
     }
 
     /**
@@ -126,8 +121,7 @@ class ColorConverter {
      * @param rgba RGBA object
      */
     constructor(rgba: RGBA) {
-        init()
-        setRGBA(rgba)
+        rgba.setRGBA(rgba)
     }
 
     /**
@@ -135,8 +129,7 @@ class ColorConverter {
      * @param hsv HSV object
      */
     constructor(hsv: HSV) {
-        init()
-        setHSV(hsv)
+        hsv.setHSV(hsv)
     }
 
     /**
@@ -144,8 +137,7 @@ class ColorConverter {
      * @param hsl HSL object
      */
     constructor(hsl: HSL) {
-        init()
-        setHSL(hsl)
+        hsl.setHSL(hsl)
     }
 
     /**
@@ -153,8 +145,7 @@ class ColorConverter {
      * @param hwb HWB object
      */
     constructor(hwb: HWB) {
-        init()
-        setHWB(hwb)
+        hwb.setHWB(hwb)
     }
 
     /**
@@ -162,8 +153,7 @@ class ColorConverter {
      * @param cmyk CMYK object
      */
     constructor(cmyk: CMYK) {
-        init()
-        setCMYK(cmyk)
+        cmyk.setCMYK(cmyk)
     }
 
     /**
@@ -171,17 +161,25 @@ class ColorConverter {
      * @param hex HEX
      */
     constructor(hex: HEX) {
-        init()
-        _setHEX(hex.hexString)
+        this.hex.hexString = hex.hexString
     }
 
     /**
      * Constructor that sets hex string value for current selected color
-     * @param hex hexadecimal string value in format #RRGGBB or #AARRGGBB
+     * @param hexString hexadecimal string value in format #RRGGBB or #AARRGGBB
      */
-    constructor(hex: String) {
-        init()
-        _setHEX(hex)
+    constructor(hexString: String) {
+        this.hex.hexString = hexString
+    }
+
+    init {
+        // init color model objects
+        rgba = RGBA(this)
+        cmyk = CMYK(this)
+        hsl = HSL(this)
+        hsv = HSV(this)
+        hwb = HWB(this)
+        hex = HEX(this)
     }
 
     /**
@@ -190,7 +188,6 @@ class ColorConverter {
      * @param model current color model
      */
     private fun setColorModel(model: Any) {
-        init()
 
         // transfer current model values, so it does not keep reference
         when (model) {
@@ -217,17 +214,6 @@ class ColorConverter {
         // convert to other models
         val modelType = getModelType(model)
         convert(modelType)
-    }
-
-    fun init() {
-
-        // init color model objects
-        rgba = RGBA()
-        cmyk = CMYK()
-        hsl = HSL()
-        hsv = HSV()
-        hwb = HWB()
-        hex = HEX()
     }
 
     /**
@@ -264,7 +250,17 @@ class ColorConverter {
      * that are needed, and set by the user (by default all model types are made available).
      * @param currentModelType current model type that will be converted to the other models
      */
-    private fun convert(currentModelType: Int) {
+    fun convert(currentModelType: Int) {
+
+        if (!isConvertMode) {
+            return
+        }
+
+        val isConvertModeLast = isConvertMode
+
+        // disable conversion mode since it is already in, to prevent infinite loop
+        isConvertMode = false
+
         when (currentModelType) {
             MODEL_RGB, MODEL_RGBA -> {
                 RGBtoCMYK()
@@ -314,6 +310,9 @@ class ColorConverter {
         if (::onConvertListener.isInitialized) {
             onConvertListener.onConvert(this)
         }
+
+        // restore
+        isConvertMode = isConvertModeLast
     }
 
     /**
@@ -373,9 +372,11 @@ class ColorConverter {
         val r = Color.red(hex.color)
         val g = Color.green(hex.color)
         val b = Color.blue(hex.color)
-        _setR(r)
-        _setG(g)
-        _setB(b, MODEL_RGBA)
+
+        // set alpha [0-100]
+        val a = (Color.alpha(hex.color) * (100 / 255f)).toInt()
+
+        rgba.setRGBA(r, g, b, a)
     }
 
     /**
@@ -741,596 +742,6 @@ class ColorConverter {
                     suffixes[3]
                 )
             }
-        }
-    }
-
-    /**
-     * Set current color using RGBA object.
-     * @param rgba rgba object
-     */
-    fun setRGBA(rgba: RGBA) {
-        _setR(rgba.r)
-        _setG(rgba.g)
-        _setB(rgba.b, MODEL_RGBA)
-        _setA(rgba.a)
-        convert(MODEL_RGBA)
-    }
-
-    /**
-     * Set current color using RGB values.
-     * @param r red
-     * @param g green
-     * @param b blue
-     */
-    fun setRGB(r: Int, g: Int, b: Int) {
-        _setR(r)
-        _setG(g)
-        _setB(b, MODEL_RGB)
-        convert(MODEL_RGB)
-    }
-
-    /**
-     * Set current color using RGBA values.
-     * @param r red
-     * @param g green
-     * @param b blue
-     * @param a alpha
-     */
-    fun setRGBA(r: Int, g: Int, b: Int, a: Int) {
-        _setR(r)
-        _setG(g)
-        _setB(b, MODEL_RGBA)
-        _setA(a)
-        convert(MODEL_RGBA)
-    }
-
-    /**
-     * Set current color using RGBA integer representation.
-     * @param color integer representation of a color
-     */
-    fun setRGBA(color: Int) {
-
-        val r = Color.red(color)                             // red   [0-255]
-        val g = Color.green(color)                           // green [0-255]
-        val b = Color.blue(color)                            // blue  [0-255]
-        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
-
-        setRGBA(r, g, b, a)
-    }
-
-    /**
-     * Set current color using CMYK object.
-     * @param cmyk cmyk object
-     */
-    fun setCMYK(cmyk: CMYK) {
-        _setC(cmyk.c)
-        _setM(cmyk.m)
-        _setY(cmyk.y)
-        _setK(cmyk.k)
-        convert(MODEL_CMYK)
-    }
-
-    /**
-     * Set current color using CMYK values.
-     * @param c cyan
-     * @param m magenta
-     * @param y yellow
-     * @param k black
-     */
-    fun setCMYK(c: Int, m: Int, y: Int, k: Int) {
-        _setC(c)
-        _setM(m)
-        _setY(y)
-        _setK(k)
-        convert(MODEL_CMYK)
-    }
-
-    /**
-     * Set current color using HSV values.
-     * @param h hue
-     * @param s saturation
-     * @param v value
-     */
-    fun setHSV(h: Int, s: Int, v: Int) {
-        _setH(h)
-        _setS(s, MODEL_HSV)
-        _setV(v)
-        convert(MODEL_HSV)
-    }
-
-    /**
-     * Set current color using HSL values.
-     * @param h hue
-     * @param s saturation
-     * @param l lightness
-     */
-    fun setHSL(h: Int, s: Int, l: Int) {
-        _setH(h)
-        _setS(s, MODEL_HSL)
-        _setL(l)
-        convert(MODEL_HSL)
-    }
-
-    /**
-     * Set current color using HWB values.
-     * @param h hue
-     * @param w white
-     * @param b black
-     */
-    fun setHWB(h: Int, w: Int, b: Int) {
-        _setH(h)
-        _setW(w)
-        _setB(b, MODEL_HWB)
-        convert(MODEL_HWB)
-    }
-
-    /**
-     * Set current color using HSV object.
-     * @param hsv HSV object
-     */
-    fun setHSV(hsv: HSV) {
-        _setH(hsv.h)
-        _setS(hsv.s, MODEL_HSV)
-        _setV(hsv.v)
-        convert(MODEL_HSV)
-    }
-
-    /**
-     * Set current color using HSL object.
-     * @param hsl HSL object
-     */
-    fun setHSL(hsl: HSL) {
-        _setH(hsl.h)
-        _setS(hsl.s, MODEL_HSL)
-        _setL(hsl.l)
-        convert(MODEL_HSL)
-    }
-
-    /**
-     * Set current color using HWB object.
-     * @param hwb HWB object
-     */
-    fun setHWB(hwb: HWB) {
-        _setH(hwb.h)
-        _setW(hwb.w)
-        _setB(hwb.b, MODEL_HWB)
-        convert(MODEL_HWB)
-    }
-
-    /**
-     * Set current color using HEX object.
-     * @param hex HEX object
-     */
-    fun setHEX(hex: HEX) {
-        _setHEX(hex.hexString)
-    }
-
-    /**
-     * Get RGB, values as string.
-     * @param withSuffix - include suffix, after each value
-     * @return string representation
-     */
-    fun getRGB(withSuffix: Boolean = true): String {
-        return rgba.getString(false, withSuffix)
-    }
-
-    /**
-     * Get RGBA, values as string.
-     * @param withSuffix - include suffix, after each value
-     * @return string representation
-     */
-    fun getRGBA(withSuffix: Boolean = true): String {
-        return rgba.getString(true, withSuffix)
-    }
-
-    /**
-     * Get CMYK, values as string.
-     * @param withSuffix include suffix, after each value
-     * @return string representation
-     */
-    fun getCMYK(withSuffix: Boolean = true): String {
-        return cmyk.getString(withSuffix)
-    }
-
-    /**
-     * Get HSL, values as string.
-     * @param withSuffix include suffix, after each value
-     * @return string representation
-     */
-    fun getHSL(withSuffix: Boolean = true): String {
-        return hsl.getString(withSuffix)
-    }
-
-    /**
-     * Get HWB, values as string.
-     * @param withSuffix include suffix, after each value
-     * @return string representation
-     */
-    fun getHWB(withSuffix: Boolean = true): String {
-        return hwb.getString(withSuffix)
-    }
-
-    /**
-     * Get HWB, values as string.
-     * @param withSuffix include suffix, after each value
-     * @return string representation
-     */
-    fun getHSV(withSuffix: Boolean = true): String {
-        return hsv.getString(withSuffix)
-    }
-
-    /**
-     * Setter and getter for current color using hexadecimal string.
-     * @param hex hexadecimal string
-     */
-    var HEX: String
-        get() = hex.toString()
-        set(hex) {
-            _setHEX(hex)
-        }
-
-    /**
-     * Setter and getter for current H(hue) component for the
-     * (HSV, HSL, HWB) color models
-     */
-    var h: Int
-        get() = hsv.h
-        set(h) {
-            _setH(h)
-            convert(MODEL_HSV)
-        }
-
-    /**
-     * Setter and getter for current R(red) component for the
-     * (RGBA) color model
-     */
-    var r: Int
-        get() = rgba.r
-        set(r) {
-            _setR(r)
-            convert(MODEL_RGBA)
-        }
-
-    /**
-     * Setter and getter for current G(green) component for the
-     * (RGBA) color model
-     */
-    var g: Int
-        get() = rgba.g
-        set(g) {
-            _setG(g)
-            convert(MODEL_RGBA)
-        }
-
-    /**
-     * Setter and getter for current A(alpha) component for the
-     * (RGBA) color model
-     */
-    var a: Int
-        get() = rgba.a
-        set(a) {
-            // alpha is not used in other models, so conversion is not needed
-            _setA(a)
-        }
-
-    /**
-     * Setter and getter for current L(lightness) component for the
-     * (HSL) color model
-     */
-    var l: Int
-        get() = hsl.l
-        set(l) {
-            _setL(l)
-            convert(MODEL_HSL)
-        }
-
-    /**
-     * Setter and getter for current C(cyan) component for the
-     * (CMYK) color model
-     */
-    var c: Int
-        get() = cmyk.c
-        set(c) {
-            _setC(c)
-            convert(MODEL_CMYK)
-        }
-
-    /**
-     * Setter and getter for current M(magenta) component for the
-     * (CMYK) color model
-     */
-    var m: Int
-        get() = cmyk.m
-        set(m) {
-            _setM(m)
-            convert(MODEL_CMYK)
-        }
-
-    /**
-     * Setter and getter for current Y(yellow) component for the
-     * (CMYK) color model
-     */
-    var y: Int
-        get() = cmyk.y
-        set(y) {
-            _setY(y)
-            convert(MODEL_CMYK)
-        }
-
-    /**
-     * Setter and getter for current B(black) component for the
-     * (CMYK) color model
-     */
-    var k: Int
-        get() = cmyk.k
-        set(k) {
-            _setK(k)
-            convert(MODEL_CMYK)
-        }
-
-    /**
-     * Setter and getter for current V(value) component for the
-     * (HSV) color model
-     */
-    var v: Int
-        get() = hsv.v
-        set(v) {
-            _setV(v)
-            convert(MODEL_HSV)
-        }
-
-    /**
-     * Setter and getter for current W(white) component for the
-     * (HWB) color model
-     */
-    var w: Int
-        get() = hwb.w
-        set(w) {
-            _setW(w)
-            convert(MODEL_HWB)
-        }
-
-    /**
-     * Setter the S(saturation) component, for either HSV or HSL color models
-     * @param s saturation new value
-     * @param model show from which color model the component is
-     */
-    fun setS(s: Int, model: Int) {
-        _setS(s, model)
-        if (model == MODEL_HSV) {
-            convert(MODEL_HSV)
-        } else if (model == MODEL_HSL) {
-            convert(MODEL_HSL)
-        }
-    }
-
-    /**
-     * Setter the B component, for either RGBA(blue) or HWB(black) color models
-     * @param b new value
-     * @param model show from which color model the component is
-     */
-    fun setB(b: Int, model: Int) {
-        _setB(b, model)
-        if (model == MODEL_RGBA) {
-            convert(MODEL_RGBA)
-        } else if (model == MODEL_HWB) {
-            convert(MODEL_HWB)
-        }
-    }
-
-    /**
-     * Getter the S component, for either HSV or HSL color models
-     * @param model show from which color model the component is
-     */
-    fun getS(model: Int): Int {
-        return when (model) {
-            MODEL_HSV -> {
-                hsv.s
-            }
-            MODEL_HSL -> {
-                hsl.s
-            }
-            else -> {
-                -1
-            }
-        }
-    }
-
-    /**
-     * Getter the B component, for either RGBA(blue) or HWB(black) color models
-     * @param model show from which color model the component is
-     */
-    fun getB(model: Int): Int {
-        return when (model) {
-            MODEL_RGBA -> {
-                rgba.b
-            }
-            MODEL_HWB -> {
-                hwb.b
-            }
-            else -> {
-                -1
-            }
-        }
-    }
-
-    private fun _setC(c: Int) {
-        var c = c
-        if (c > CMYK.C_MAX) {
-            c = CMYK.C_MAX
-        } else if (c < CMYK.C_MIN) {
-            c = CMYK.C_MIN
-        }
-        cmyk.c = c
-    }
-
-    private fun _setM(m: Int) {
-        var m = m
-        if (m > CMYK.M_MAX) {
-            m = CMYK.M_MAX
-        } else if (m < CMYK.M_MIN) {
-            m = CMYK.M_MIN
-        }
-        cmyk.m = m
-    }
-
-    private fun _setY(y: Int) {
-        var y = y
-        if (y > CMYK.Y_MAX) {
-            y = CMYK.Y_MAX
-        } else if (y < CMYK.Y_MIN) {
-            y = CMYK.Y_MIN
-        }
-        cmyk.y = y
-    }
-
-    private fun _setK(k: Int) {
-        var k = k
-        if (k > CMYK.K_MAX) {
-            k = CMYK.K_MAX
-        } else if (k < CMYK.K_MIN) {
-            k = CMYK.K_MIN
-        }
-        cmyk.k = k
-    }
-
-    private fun _setR(r: Int) {
-
-        // check for value in range
-        var r = r
-        if (r > RGBA.R_MAX) {
-            r = RGBA.R_MAX
-        } else if (r < RGBA.R_MIN) {
-            r = RGBA.R_MIN
-        }
-        rgba.r = r
-    }
-
-    private fun _setG(g: Int) {
-
-        // check for value in range
-        var g = g
-        if (g > RGBA.G_MAX) {
-            g = RGBA.G_MAX
-        } else if (g < RGBA.G_MIN) {
-            g = RGBA.G_MIN
-        }
-        rgba.g = g
-    }
-
-    private fun _setB(b: Int, model: Int) {
-
-        // check for value in range
-        var b = b
-        if (model == MODEL_RGB || model == MODEL_RGBA) {
-            // blue
-            if (b > RGBA.B_MAX) {
-                b = RGBA.B_MAX
-            } else if (b < RGBA.B_MIN) {
-                b = RGBA.B_MIN
-            }
-            rgba.b = b
-        } else if (model == MODEL_HWB) {
-            //black
-            if (b > HWB.B_MAX) {
-                b = HWB.B_MAX
-            } else if (b < HWB.B_MIN) {
-                b = HWB.B_MIN
-            }
-            hwb.b = b
-        }
-    }
-
-    private fun _setA(a: Int) {
-
-        // check for value in range
-        var a = a
-        if (a > RGBA.A_MAX) {
-            a = RGBA.A_MAX
-        } else if (a < RGBA.A_MIN) {
-            a = RGBA.A_MIN
-        }
-        rgba.a = a
-    }
-
-    private fun _setH(h: Int) {
-        var h = h
-        if (h > HSV.H_MAX) {
-            h = HSV.H_MAX
-        } else if (h < HSV.H_MIN) {
-            h = HSV.H_MIN
-        }
-        hsl.h = h
-        hsv.h = h
-    }
-
-    private fun _setS(s: Int, model: Int) {
-        var s = s
-        if (model == MODEL_HSV) {
-            if (s > HSV.S_MAX) {
-                s = HSV.S_MAX
-            } else if (s < HSV.S_MIN) {
-                s = HSV.S_MIN
-            }
-            hsv.s = s
-        } else if (model == MODEL_HSL) {
-            if (s > HSL.S_MAX) {
-                s = HSL.S_MAX
-            } else if (s < HSL.S_MIN) {
-                s = HSL.S_MIN
-            }
-            hsl.s = s
-        }
-    }
-
-    private fun _setV(v: Int) {
-        var v = v
-        if (v > HSV.V_MAX) {
-            v = HSV.V_MAX
-        } else if (v < HSV.V_MIN) {
-            v = HSV.V_MIN
-        }
-        hsv.v = v
-    }
-
-    private fun _setL(l: Int) {
-        var l = l
-        if (l > HSL.L_MAX) {
-            l = HSL.L_MAX
-        } else if (l < HSL.L_MIN) {
-            l = HSL.L_MIN
-        }
-        hsl.l = l
-    }
-
-    private fun _setW(w: Int) {
-        var w = w
-        if (w > HWB.W_MAX) {
-            w = HWB.W_MAX
-        } else if (w < HWB.W_MIN) {
-            w = HWB.W_MIN
-        }
-        hwb.w = w
-    }
-
-    private fun _setHEX(hex: String) {
-        val checkedHex = "#" + hex.replace("[^a-f0-9A-F]+".toRegex(), "").toUpperCase()
-        if (checkedHex.length == 7) {
-
-            // set hex string value to generate color
-            this.hex.hexString = checkedHex
-            convert(MODEL_HEX)
-
-        } else if (checkedHex.length == 9) {
-
-            // set hex string value to generate color
-            this.hex.hexString = checkedHex
-
-            // set alpha after color is generated
-            val a = (Color.alpha(this.hex.color) * (100 / 255f)).toInt()  // alpha [0-100]
-            _setA(a)
-
-            convert(MODEL_HEX)
         }
     }
 
