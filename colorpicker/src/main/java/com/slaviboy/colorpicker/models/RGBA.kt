@@ -1,5 +1,7 @@
 package com.slaviboy.colorpicker.models
 
+import android.graphics.Color
+
 // Copyright (C) 2020 Stanislav Georgiev
 //  https://github.com/slaviboy
 //
@@ -96,6 +98,13 @@ class RGBA(var r: Int = 0, var g: Int = 0, var b: Int = 0, var a: Int = 100) {
      */
     fun getArray(): IntArray {
         return intArrayOf(r, g, b, a)
+    }
+
+    /**
+     * Get integer representation of the color
+     */
+    fun getInt(): Int {
+        return Color.argb((a * (255 / 100f)).toInt(), r, g, b)
     }
 
     override fun toString(): String {
