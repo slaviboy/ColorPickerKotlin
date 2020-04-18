@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val circularHSV: CircularHSV = findViewById(R.id.picker3)
 
         // create color convert, that will convert from one color model to another
-        colorConverter = ColorConverter(160, 73, 184, 50)
+        colorConverter = ColorConverter("#1f538cb5") //ColorConverter(160, 73, 184, 50)
 
         // create updater object, that will update all color window and text views
         updater = Updater(colorConverter)

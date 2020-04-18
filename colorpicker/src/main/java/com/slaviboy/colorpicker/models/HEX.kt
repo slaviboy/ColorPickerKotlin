@@ -21,12 +21,8 @@ import android.graphics.Color
 /**
  * Class that hold HEX(HEXADECIMAL) representation for a given color, both as hex string
  * and as integer representation for the current color.
- *
- * @param hexString hex string in format #RRGGBB
  */
-class HEX(var hexString: String = "#000000") {
-
-    var hex = Color.parseColor(hexString)
+class HEX() {
 
     /**
      * Constructor that set values using hex object.
@@ -35,21 +31,32 @@ class HEX(var hexString: String = "#000000") {
     constructor(hex: HEX) : this(hex.hexString)
 
     /**
+     * Constructor that set values using hex object.
+     * @param hexString - hexadecimal string in format #RRGGBB or #AARRGGBB
+     */
+    constructor(hexString: String) : this() {
+        this.hexString = hexString
+    }
+
+    var color: Int = Color.BLACK
+    var hexString: String = "#000000"
+        set(value) {
+
+            // get integer representation
+            this.color = Color.parseColor(value)
+
+            field = if (value.length == 9) {
+                // remove the alpha channel from the string
+                "#" + value.substring(3, 9)
+            } else value
+        }
+
+    /**
      * Set hex values using existing hex object.
      * @param hex
      */
     fun setHEX(hex: HEX) {
-        this.hex = hex.hex
         this.hexString = hex.hexString
-    }
-
-    /**
-     * Set hex values using given hexadecimal string.
-     * @param hex - hex string in formats: #RRGGBB
-     */
-    fun setHEX(hex: String) {
-        this.hex = Color.parseColor(hex) // get integer representation
-        this.hexString = hex
     }
 
     override fun toString(): String {
@@ -66,7 +73,7 @@ class HEX(var hexString: String = "#000000") {
          */
         fun isHEX(hex: String): Boolean {
             val newHEX = hex.replace("[^a-f0-9A-F]+".toRegex(), "")
-            return newHEX.length == 6
+            return (newHEX.length == 6 || newHEX.length == 8)
         }
     }
 }

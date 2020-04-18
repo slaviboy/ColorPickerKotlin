@@ -1,9 +1,7 @@
 package com.slaviboy.colorpicker.converter
 
 import android.graphics.Color
-import android.util.Log
 import com.slaviboy.colorpicker.models.*
-import java.util.*
 import kotlin.math.roundToInt
 
 // Copyright (C) 2020 Stanislav Georgiev
@@ -49,6 +47,40 @@ class ColorConverter {
             true,       // cmyk
             true        // hex
         )
+
+    /**
+     * Constructor that supports all value, from all color models RGB, RGBA, HSV, HSL and CMYK
+     * and you can set only the one you need example: ColorConverter(h = 32, s = 41, v = 88)
+     * @param r red [0-255]
+     * @param g green [0-255]
+     * @param b blue [0-255]
+     * @param a alpha [0-100]
+     * @param h hue [0-360]
+     * @param s saturation [0-100]
+     * @param v value [0-100]
+     * @param l lightness [0-100]
+     * @param c cyan [0-100]
+     * @param m magenta [0-100]
+     * @param s yellow [0-100]
+     * @param k black [0-100]
+     */
+    constructor(
+        r: Int = -1, g: Int = -1, b: Int = -1, a: Int = -1, h: Int = -1, s: Int = -1, v: Int = -1,
+        l: Int = -1, c: Int = -1, m: Int = -1, y: Int = -1, k: Int = -1
+    ) {
+        init()
+        if (r != -1 && g != -1 && b != -1 && a != -1) {
+            setRGBA(r, g, b, a)
+        } else if (r != -1 && g != -1 && b != -1) {
+            setRGB(r, g, b)
+        } else if (h != -1 && s != -1 && v != -1) {
+            setHSV(h, s, v)
+        } else if (h != -1 && s != -1 && l != -1) {
+            setHSL(h, s, l)
+        } else if (c != -1 && m != -1 && y != -1 && k != -1) {
+            setCMYK(c, m, y, k)
+        }
+    }
 
     /**
      * Constructor that sets r, g b and a values for current selected color
@@ -140,16 +172,16 @@ class ColorConverter {
      */
     constructor(hex: HEX) {
         init()
-        setHEX(hex)
+        _setHEX(hex.hexString)
     }
 
     /**
      * Constructor that sets hex string value for current selected color
-     * @param hex hexadecimal string value in format #RRGGBB
+     * @param hex hexadecimal string value in format #RRGGBB or #AARRGGBB
      */
     constructor(hex: String) {
         init()
-        HEX = hex
+        _setHEX(hex)
     }
 
     /**
@@ -335,15 +367,12 @@ class ColorConverter {
 
     /**
      * Convert HEX to RGB for current object.
+     * Do not use the alpha value from the HEX!!!
      */
     private fun HEXtoRGB() {
-        if (!usedModels[MODEL_RGBA]) {
-            return
-        }
-        val hex = hex.hex
-        val r = hex shr 16 and 0xFF
-        val g = hex shr 8 and 0xFF
-        val b = hex shr 0 and 0xFF
+        val r = Color.red(hex.color)
+        val g = Color.green(hex.color)
+        val b = Color.blue(hex.color)
         _setR(r)
         _setG(g)
         _setB(b, MODEL_RGBA)
@@ -353,9 +382,6 @@ class ColorConverter {
      * Convert HSV to RGB for current object.
      */
     private fun HSVtoRGB() {
-        if (!usedModels[MODEL_RGBA]) {
-            return
-        }
         val h = hsv.h / 360.0
         val s = hsv.s / 100.0
         val v = hsv.v / 100.0
@@ -417,9 +443,6 @@ class ColorConverter {
      * Convert HWB to RGB for current object.
      */
     private fun HWBtoRGB() {
-        if (!usedModels[MODEL_RGBA]) {
-            return
-        }
         var w = hwb.w / 100.0
         var b = hwb.b / 100.0
 
@@ -450,9 +473,6 @@ class ColorConverter {
      * Convert HSL to RGB for current object.
      */
     private fun HSLtoRGB() {
-        if (!usedModels[MODEL_RGBA]) {
-            return
-        }
         val h = hsl.h / 360.0
         val s = hsl.s / 100.0
         val l = hsl.l / 100.0
@@ -485,9 +505,6 @@ class ColorConverter {
      * Convert CMYK to RGB for current object.
      */
     private fun CMYKtoRGB() {
-        if (!usedModels[MODEL_RGBA]) {
-            return
-        }
         val c = cmyk.c / 100.0
         val m = cmyk.m / 100.0
         val y = cmyk.y / 100.0
@@ -515,7 +532,7 @@ class ColorConverter {
             rgba.g,
             rgba.b
         ).toUpperCase()
-        this.hex.setHEX("#$hex")
+        this.hex.hexString = "#$hex"
     }
 
     /**
@@ -765,6 +782,20 @@ class ColorConverter {
         _setB(b, MODEL_RGBA)
         _setA(a)
         convert(MODEL_RGBA)
+    }
+
+    /**
+     * Set current color using RGBA integer representation.
+     * @param color integer representation of a color
+     */
+    fun setRGBA(color: Int) {
+
+        val r = Color.red(color)                             // red   [0-255]
+        val g = Color.green(color)                           // green [0-255]
+        val b = Color.blue(color)                            // blue  [0-255]
+        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
+
+        setRGBA(r, g, b, a)
     }
 
     /**
@@ -1283,9 +1314,22 @@ class ColorConverter {
     }
 
     private fun _setHEX(hex: String) {
-        val newHex = "#" + hex.replace("[^a-f0-9A-F]+".toRegex(), "").toUpperCase()
-        if (newHex.length == 7) {
-            this.hex.setHEX(hex)
+        val checkedHex = "#" + hex.replace("[^a-f0-9A-F]+".toRegex(), "").toUpperCase()
+        if (checkedHex.length == 7) {
+
+            // set hex string value to generate color
+            this.hex.hexString = checkedHex
+            convert(MODEL_HEX)
+
+        } else if (checkedHex.length == 9) {
+
+            // set hex string value to generate color
+            this.hex.hexString = checkedHex
+
+            // set alpha after color is generated
+            val a = (Color.alpha(this.hex.color) * (100 / 255f)).toInt()  // alpha [0-100]
+            _setA(a)
+
             convert(MODEL_HEX)
         }
     }
