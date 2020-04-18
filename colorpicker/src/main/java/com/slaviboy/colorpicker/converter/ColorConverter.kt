@@ -56,10 +56,11 @@ class ColorConverter {
      * @param color integer representation of a color
      */
     constructor(color: Int) {
-        val r = Color.red(color)
-        val g = Color.green(color)
-        val b = Color.blue(color)
-        val a = Color.alpha(color)
+
+        val r = Color.red(color)                             // red   [0-255]
+        val g = Color.green(color)                           // green [0-255]
+        val b = Color.blue(color)                            // blue  [0-255]
+        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
 
         init()
         setRGBA(r, g, b, a)
@@ -67,9 +68,9 @@ class ColorConverter {
 
     /**
      * Constructor that sets r, g and b values for current selected color
-     * @param r red
-     * @param g green
-     * @param b blue
+     * @param r red [0-255]
+     * @param g green [0-255]
+     * @param b blue [0-255]
      */
     constructor(r: Int = 0, g: Int = 0, b: Int = 0) {
         init()
@@ -78,10 +79,10 @@ class ColorConverter {
 
     /**
      * Constructor that sets r, g, b and a values for current selected color
-     * @param r red
-     * @param g green
-     * @param b blue
-     * @param a alpha
+     * @param r red [0-255]
+     * @param g green [0-255]
+     * @param b blue [0-255]
+     * @param a alpha [0-100]
      */
     constructor(r: Int, g: Int, b: Int, a: Int) {
         init()
