@@ -2,6 +2,7 @@ package com.slaviboy.colorpickerkotlinexample
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var textViewChangeType: EditText
     lateinit var labelViewChangeType: TextView
     lateinit var updater: Updater
+    lateinit var colorConverter: ColorConverter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val circularHSV: CircularHSV = findViewById(R.id.picker3)
 
         // create color convert, that will convert from one color model to another
-        val colorConverter = ColorConverter(160, 73, 184, 50)
+        colorConverter = ColorConverter(160, 73, 184, 50)
 
         // create updater object, that will update all color window and text views
         updater = Updater(colorConverter)
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
      * Change the text view type, by changing the tag and updating
      * the it in the updater class.
      */
-    fun onButtonClick(view: View) {
+    fun onUpdateModelTypeClick(view: View) {
         if (::textViewChangeType.isInitialized) {
             val tagString = (view as TextView).text.toString()
             textViewChangeType.tag = tagString
@@ -82,6 +84,20 @@ class MainActivity : AppCompatActivity() {
             val type = Updater.getType(textViewChangeType.tag.toString())
             updater.updateTextViewTag(textViewChangeType, type)
         }
+    }
+
+    /**
+     * Generate new random color
+     */
+    fun onGenerateRandomColor(view: View) {
+        val range = 0..255
+        val r = range.random()
+        val g = range.random()
+        val b = range.random()
+        colorConverter.setRGBA(r, g, b, (1..100).random())
+        updater.updateViews()
+
+        Log.i("color-picker", "$r, $g, $b")
     }
 
     /**

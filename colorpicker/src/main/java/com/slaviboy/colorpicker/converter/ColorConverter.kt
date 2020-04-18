@@ -51,6 +51,21 @@ class ColorConverter {
         )
 
     /**
+     * Constructor that sets r, g b and a values for current selected color
+     * as a integer representation.
+     * @param color integer representation of a color
+     */
+    constructor(color: Int) {
+        val r = Color.red(color)
+        val g = Color.green(color)
+        val b = Color.blue(color)
+        val a = Color.alpha(color)
+
+        init()
+        setRGBA(r, g, b, a)
+    }
+
+    /**
      * Constructor that sets r, g and b values for current selected color
      * @param r red
      * @param g green
@@ -289,7 +304,7 @@ class ColorConverter {
                 }
             }
         } else {
-              0.0
+            0.0
         }
 
         // normalize

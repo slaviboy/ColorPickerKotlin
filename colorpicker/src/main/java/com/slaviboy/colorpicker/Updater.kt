@@ -633,7 +633,7 @@ class Updater(
     /**
      * Update text view value using the color converter to get the value for the
      * corresponding text view type.
-     * @param textView
+     * @param textView text view that will be updated
      */
     private fun updateTextView(textView: TextView) {
 
@@ -784,8 +784,7 @@ class Updater(
      */
     private fun checkTextView(textView: TextView) {
         val type = textViews[textView]!!
-        val isValueUpdated: Boolean
-        isValueUpdated = if (type == TYPE_HEX) {
+        val isValueUpdated: Boolean = if (type == TYPE_HEX) {
             // hex expected
             checkHEX(textView)
         } else if (type == TYPE_RGB || type == TYPE_RGBA || type == TYPE_HSV || type == TYPE_HSL || type == TYPE_CMYK) {
@@ -814,6 +813,22 @@ class Updater(
                 onUpdateListener.onTextViewUpdate(textView)
             }
         }
+    }
+
+    /**
+     * Update all color windows and text views
+     */
+    fun updateViews() {
+
+        // update and redraw all color windows
+        for (i in colorWindows.indices) {
+            val tempWindow = colorWindows[i]
+            tempWindow.update()
+            tempWindow.redraw()
+        }
+
+        // update other text views
+        updateTextViews()
     }
 
     /**
