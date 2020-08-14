@@ -1,23 +1,22 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.slaviboy.colorpicker.models
 
-import android.graphics.Color
-import com.slaviboy.colorpicker.converter.ColorConverter
-
-// Copyright (C) 2020 Stanislav Georgiev
-//  https://github.com/slaviboy
-//
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU Affero General Public License as
-//	published by the Free Software Foundation, either version 3 of the
-//	License, or (at your option) any later version.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU Affero General Public License for more details.
-//
-//	You should have received a copy of the GNU Affero General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import com.slaviboy.colorpicker.main.ColorConverter
 
 /**
  * Class that represents RGBA(RED, GREEN, BLUE and ALPHA) color model
@@ -48,14 +47,14 @@ class RGBA(val colorConverter: ColorConverter) {
             colorConverter.convert(ColorConverter.MODEL_RGBA)
         }
 
-    // alpha [0,100], used only in RGBA model thus its not used in the conversion
-    var a: Int = 100
+    // alpha [0,255], used only in RGBA model thus its not used in the conversion
+    var a: Int = 255
 
     // suffix for each value, used when toString method is returned
-    var rSuffix = R_SUFFIX
-    var gSuffix = G_SUFFIX
-    var bSuffix = B_SUFFIX
-    var aSuffix = A_SUFFIX
+    var rSuffix: String = R_SUFFIX
+    var gSuffix: String = G_SUFFIX
+    var bSuffix: String = B_SUFFIX
+    var aSuffix: String = A_SUFFIX
 
     /**
      * Constructor that set values using r, g, b and a values.
@@ -63,7 +62,7 @@ class RGBA(val colorConverter: ColorConverter) {
      * @param r red [0,255]
      * @param g green [0,255]
      * @param b blue [0,255]
-     * @param a alpha [0,100]
+     * @param a alpha [0,255]
      */
     constructor(colorConverter: ColorConverter, r: Int, g: Int, b: Int, a: Int) : this(colorConverter) {
         setRGBA(r, g, b, a)
@@ -90,20 +89,20 @@ class RGBA(val colorConverter: ColorConverter) {
      */
     fun setRGBA(color: Int) {
 
-        val r = Color.red(color)                             // red   [0-255]
-        val g = Color.green(color)                           // green [0-255]
-        val b = Color.blue(color)                            // blue  [0-255]
-        val a = (Color.alpha(color) * (100 / 255f)).toInt()  // alpha [0-100]
+        val r = ColorConverter.red(color)      // red   [0-255]
+        val g = ColorConverter.green(color)    // green [0-255]
+        val b = ColorConverter.blue(color)     // blue  [0-255]
+        val a = ColorConverter.alpha(color)    // alpha [0-255]
 
         setRGBA(r, g, b, a)
     }
 
     /**
      * Public setter that sets RGBA object using individual values.
-     * @param r red
-     * @param g green
-     * @param b blue
-     * @param a alpha
+     * @param r red [0-255]
+     * @param g green [0-255]
+     * @param b blue [0-255]
+     * @param a alpha [0-255]
      */
     fun setRGBA(r: Int = this.r, g: Int = this.g, b: Int = this.b, a: Int = this.a) {
 
@@ -123,17 +122,29 @@ class RGBA(val colorConverter: ColorConverter) {
     }
 
     /**
-     * Set suffix for each value, separately.
-     * @param rSuffix red suffix
-     * @param gSuffix green suffix
-     * @param bSuffix blue suffix
-     * @param aSuffix alpha suffix
+     * Get the current alpha channel value in range between [0,100]
      */
-    fun setSuffix(rSuffix: String, gSuffix: String, bSuffix: String, aSuffix: String = "") {
-        this.rSuffix = rSuffix
-        this.gSuffix = gSuffix
-        this.bSuffix = bSuffix
-        this.aSuffix = aSuffix
+    fun alphaInRangeToHundred(): Int {
+        return (a * (100f / 255f)).toInt()
+    }
+
+    /**
+     * Set suffix for each value, separately.
+     * @param suffixes red, green, blue and alpha suffix
+     */
+    fun setSuffix(vararg suffixes: String = arrayOf(this.rSuffix, this.gSuffix, this.bSuffix, this.aSuffix)) {
+        if (suffixes.size >= 0) {
+            this.rSuffix = suffixes[0]
+        }
+        if (suffixes.size >= 1) {
+            this.gSuffix = suffixes[1]
+        }
+        if (suffixes.size >= 2) {
+            this.bSuffix = suffixes[2]
+        }
+        if (suffixes.size >= 3) {
+            this.aSuffix = suffixes[3]
+        }
     }
 
     /**
@@ -148,7 +159,7 @@ class RGBA(val colorConverter: ColorConverter) {
      * Get integer representation of the color
      */
     fun getInt(): Int {
-        return Color.argb((a * (255 / 100f)).toInt(), r, g, b)
+        return ColorConverter.RGBAtoColor(r, g, b, a)
     }
 
     override fun toString(): String {
@@ -170,7 +181,13 @@ class RGBA(val colorConverter: ColorConverter) {
             }
         } else {
             if (withSuffix) {
-                "$r$rSuffix$g$gSuffix$b"
+
+                // if default suffix is used do not add it at the end
+                if (bSuffix == B_SUFFIX) {
+                    "$r$rSuffix$g$gSuffix$b"
+                } else {
+                    "$r$rSuffix$g$gSuffix$b$bSuffix"
+                }
             } else {
                 "$r $g $b"
             }
@@ -187,7 +204,7 @@ class RGBA(val colorConverter: ColorConverter) {
         const val B_MIN = 0
         const val B_MAX = 255
         const val A_MIN = 0
-        const val A_MAX = 100
+        const val A_MAX = 255
 
         // default suffix for each variable, when returning string
         const val R_SUFFIX = ", "
@@ -223,7 +240,7 @@ class RGBA(val colorConverter: ColorConverter) {
         }
 
         /**
-         * Check if alpha value is in range [0,100].
+         * Check if alpha value is in range [0,255].
          * @param a alpha value to be checked
          * @return boolean if value is in range
          */

@@ -2,7 +2,7 @@ package com.slaviboy.colorpickerkotlinexample.pickers
 
 import android.content.Context
 import android.util.AttributeSet
-import com.slaviboy.colorpicker.pickers.ColorPicker
+import com.slaviboy.colorpicker.main.ColorPicker
 import com.slaviboy.colorpickerkotlinexample.R
 
 class RectangularHSL : ColorPicker {
@@ -15,11 +15,7 @@ class RectangularHSL : ColorPicker {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init(context)
     }
 

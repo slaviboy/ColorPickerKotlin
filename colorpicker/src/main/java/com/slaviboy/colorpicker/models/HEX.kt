@@ -1,23 +1,22 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.slaviboy.colorpicker.models
 
-import android.graphics.Color
-import com.slaviboy.colorpicker.converter.ColorConverter
-
-// Copyright (C) 2020 Stanislav Georgiev
-//  https://github.com/slaviboy
-//
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU Affero General Public License as
-//	published by the Free Software Foundation, either version 3 of the
-//	License, or (at your option) any later version.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU Affero General Public License for more details.
-//
-//	You should have received a copy of the GNU Affero General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import com.slaviboy.colorpicker.main.ColorConverter
 
 /**
  * Class that hold HEX(HEXADECIMAL) representation for a given color, both as hex string
@@ -26,47 +25,89 @@ import com.slaviboy.colorpicker.converter.ColorConverter
  */
 class HEX(var colorConverter: ColorConverter) {
 
-    var color: Int = Color.BLACK
-    var hexString: String = "#000000"
-        set(value) {
+    var r: Int                          // red color channel, that was set by the hex value
+    var g: Int                          // green color channel, that was set by the hex value
+    var b: Int                          // blue color channel, that was set by the hex value
+    var usePreviousAlphaValue: Boolean  // if previous alpha should be used when getting the hex value, or use FF=255 when alpha channel is required
 
-            // get integer representation
-            this.color = Color.parseColor(value)
+    init {
+        r = 0
+        g = 0
+        b = 0
+        usePreviousAlphaValue = true
+    }
 
-            field = if (value.length == 9) {
-                // remove the alpha channel from the string
-                "#" + value.substring(3, 9).toUpperCase()
-            } else value.toUpperCase()
+    /**
+     * Set hexadecimal string in the following formats  #RRGGBB or #RRGGBBAA
+     * @param hexString hexadecimal string values
+     */
+    fun setHexString(hexString: String) {
 
-            colorConverter.convert(ColorConverter.MODEL_HEX)
+        // get r,g,b,a channels
+        r = hexString.substring(1, 3).toInt(16)
+        g = hexString.substring(3, 5).toInt(16)
+        b = hexString.substring(5, 7).toInt(16)
+
+        // set the alpha
+        colorConverter.rgba.a = if (hexString.length == 7) {
+            if (usePreviousAlphaValue) {
+                colorConverter.rgba.a
+            } else {
+                255
+            }
+        } else {
+            hexString.substring(7, 9).toInt(16)
         }
+
+        colorConverter.convert(ColorConverter.MODEL_HEX)
+    }
 
     /**
      * Constructor that set values using hex object.
      * @param colorConverter color converter that is used to update the other color models
      * @param hex hexadecimal object
      */
-    constructor(colorConverter: ColorConverter, hex: HEX) : this(colorConverter, hex.hexString)
+    constructor(colorConverter: ColorConverter, hex: HEX) : this(colorConverter, hex.toString(true))
 
     /**
      * Constructor that set values using hex object.
      * @param colorConverter color converter that is used to update the other color models
-     * @param hexString hexadecimal string in format #RRGGBB or #AARRGGBB
+     * @param hexString hexadecimal string in format #RRGGBB or #RRGGBBAA
      */
     constructor(colorConverter: ColorConverter, hexString: String) : this(colorConverter) {
-        this.hexString = hexString
+        setHexString(hexString)
     }
 
     /**
      * Set hex values using existing hex object.
-     * @param hex
+     * @param hex hex object
      */
     fun setHEX(hex: HEX) {
-        this.hexString = hex.hexString
+        setHexString(hex.toString(true))
     }
 
-    override fun toString(): String {
-        return hexString
+    /**
+     * Get the integer representation of the hex color
+     * @param withAlpha if alpha channel values should be included or not when calculating the integer representation
+     */
+    fun getColor(withAlpha: Boolean = false): Int {
+        return if (withAlpha) {
+            ColorConverter.RGBAtoColor(r, g, b, colorConverter.rgba.a)
+        } else {
+            ColorConverter.RGBAtoColor(r, g, b)
+        }
+    }
+
+    /**
+     * Return the hexadecimal representation of the color
+     * @param withAlpha if alpha channel values should be included or not returning the hex representation
+     */
+    fun toString(withAlpha: Boolean = false): String {
+        return if (withAlpha) {
+            ColorConverter.RGBAtoHEXA(r, g, b, colorConverter.rgba.a)
+        } else {
+            ColorConverter.RGBAtoHEXA(r, g, b)
+        }
     }
 
     companion object {

@@ -17,6 +17,8 @@
 
         <attr name="border_color" format="color" />
         <attr name="border_stroke_width" format="string" />
+
+        <attr name="wrap_content_ratio" format="float" />
     </declare-styleable>
 
     <declare-styleable name="Circular">

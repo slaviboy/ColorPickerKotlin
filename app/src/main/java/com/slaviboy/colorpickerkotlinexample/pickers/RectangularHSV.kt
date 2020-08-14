@@ -2,11 +2,11 @@ package com.slaviboy.colorpickerkotlinexample.pickers
 
 import android.content.Context
 import android.util.AttributeSet
-import com.slaviboy.colorpicker.pickers.ColorPicker
+import com.slaviboy.colorpicker.main.ColorPicker
 import com.slaviboy.colorpickerkotlinexample.R
 
-
 class RectangularHSV : ColorPicker {
+
     constructor(context: Context) : super(context) {
         init(context)
     }

@@ -1,22 +1,22 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.slaviboy.colorpicker.models
 
-import com.slaviboy.colorpicker.converter.ColorConverter
-
-// Copyright (C) 2020 Stanislav Georgiev
-//  https://github.com/slaviboy
-//
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU Affero General Public License as
-//	published by the Free Software Foundation, either version 3 of the
-//	License, or (at your option) any later version.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU Affero General Public License for more details.
-//
-//	You should have received a copy of the GNU Affero General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import com.slaviboy.colorpicker.main.ColorConverter
 
 /**
  * Class that represents HWB(HUE, WHITE and BLACK) color model
@@ -46,9 +46,9 @@ class HWB(var colorConverter: ColorConverter) {
             colorConverter.convert(ColorConverter.MODEL_HWB)
         }
 
-    var hSuffix = H_SUFFIX
-    var wSuffix = W_SUFFIX
-    var bSuffix = B_SUFFIX
+    var hSuffix: String = H_SUFFIX
+    var wSuffix: String = W_SUFFIX
+    var bSuffix: String = B_SUFFIX
 
     /**
      * Constructor that set values using HWB values.
@@ -98,14 +98,18 @@ class HWB(var colorConverter: ColorConverter) {
 
     /**
      * Set suffix for each value, separately.
-     * @param hSuffix hue suffix
-     * @param wSuffix white suffix
-     * @param bSuffix black suffix
+     * @param suffixes hue, saturation and value suffix
      */
-    fun setSuffix(hSuffix: String, wSuffix: String, bSuffix: String) {
-        this.hSuffix = hSuffix
-        this.wSuffix = wSuffix
-        this.bSuffix = bSuffix
+    fun setSuffix(vararg suffixes: String = arrayOf(this.hSuffix, this.wSuffix, this.bSuffix)) {
+        if (suffixes.size >= 0) {
+            this.hSuffix = suffixes[0]
+        }
+        if (suffixes.size >= 1) {
+            this.wSuffix = suffixes[1]
+        }
+        if (suffixes.size >= 2) {
+            this.bSuffix = suffixes[2]
+        }
     }
 
     /**
@@ -145,8 +149,8 @@ class HWB(var colorConverter: ColorConverter) {
 
         // default suffix for each variable, when returning string
         const val H_SUFFIX = "°, "
-        const val W_SUFFIX = ", "
-        const val B_SUFFIX = ""
+        const val W_SUFFIX = "%, "
+        const val B_SUFFIX = "%"
 
         /**
          * Check if hue value is in range [0,360].

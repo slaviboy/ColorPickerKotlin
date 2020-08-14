@@ -4,74 +4,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#00ffffff"
     tools:context=".MainActivity">
 
+    <!--region Color Pickers-->
     <com.slaviboy.colorpickerkotlinexample.pickers.RectangularHSV
-        android:id="@+id/picker1"
-        android:layout_width="250dp"
-        android:layout_height="210dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/rectangular_hsv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/rectangular_hsl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.slaviboy.colorpickerkotlinexample.pickers.RectangularHSL
-        android:id="@+id/picker2"
-        android:layout_width="250dp"
-        android:layout_height="210dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/picker1" />
+        android:id="@+id/rectangular_hsl"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/circular_hsv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rectangular_hsv" />
 
     <com.slaviboy.colorpickerkotlinexample.pickers.CircularHSV
-        android:id="@+id/picker3"
-        android:layout_width="250dp"
-        android:layout_height="210dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/picker2" />
+        android:id="@+id/circular_hsv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/rgba_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rectangular_hsl" />
+    <!--endregion-->
 
+    <!--region Buttons-->
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/rgb_button"
+        android:id="@+id/rgba_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:onClick="onUpdateModelTypeClick"
-        android:text="RGB"
-        app:layout_constraintLeft_toLeftOf="@+id/picker3"
-        app:layout_constraintTop_toBottomOf="@+id/picker3" />
+        android:text="RGBA"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/hsv_button"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/circular_hsv"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/hsv_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:onClick="onUpdateModelTypeClick"
         android:text="HSV"
-        app:layout_constraintLeft_toRightOf="@+id/rgb_button"
-        app:layout_constraintTop_toBottomOf="@+id/picker3" />
+        app:layout_constraintBottom_toBottomOf="@+id/rgba_button"
+        app:layout_constraintEnd_toStartOf="@+id/hsl_button"
+        app:layout_constraintStart_toEndOf="@+id/rgba_button"
+        app:layout_constraintTop_toTopOf="@+id/rgba_button" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/hsl_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:onClick="onUpdateModelTypeClick"
         android:text="HEX"
-        app:layout_constraintLeft_toRightOf="@+id/hsv_button"
-        app:layout_constraintTop_toBottomOf="@+id/picker3" />
+        app:layout_constraintBottom_toBottomOf="@+id/rgba_button"
+        app:layout_constraintEnd_toStartOf="@+id/random_color"
+        app:layout_constraintStart_toEndOf="@+id/hsv_button"
+        app:layout_constraintTop_toTopOf="@+id/rgba_button" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/random_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:onClick="onGenerateRandomColor"
         android:text="Random Color"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/rgba_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/hsl_button"
+        app:layout_constraintTop_toTopOf="@+id/rgba_button" />
+    <!--endregion-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,8 +4,14 @@
       <w>affero</w>
       <w>cmyk</w>
       <w>cmyka</w>
+      <w>darkgray</w>
+      <w>darkgrey</w>
       <w>georgiev</w>
+      <w>hexa</w>
+      <w>lightgray</w>
+      <w>lightgrey</w>
       <w>stanislav</w>
+      <w>unfocus</w>
     </words>
   </dictionary>
 </component>

@@ -1,22 +1,22 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.slaviboy.colorpicker.models
 
-import com.slaviboy.colorpicker.converter.ColorConverter
-
-// Copyright (C) 2020 Stanislav Georgiev
-//  https://github.com/slaviboy
-//
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU Affero General Public License as
-//	published by the Free Software Foundation, either version 3 of the
-//	License, or (at your option) any later version.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU Affero General Public License for more details.
-//
-//	You should have received a copy of the GNU Affero General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import com.slaviboy.colorpicker.main.ColorConverter
 
 /**
  * Class that represents CMYK(CYAN, MAGENTA, YELLOW and BLACK) color model
@@ -53,10 +53,10 @@ class CMYK(var colorConverter: ColorConverter) {
             colorConverter.convert(ColorConverter.MODEL_CMYK)
         }
 
-    var cSuffix = C_SUFFIX
-    var mSuffix = M_SUFFIX
-    var ySuffix = Y_SUFFIX
-    var kSuffix = K_SUFFIX
+    var cSuffix: String = C_SUFFIX
+    var mSuffix: String = M_SUFFIX
+    var ySuffix: String = Y_SUFFIX
+    var kSuffix: String = K_SUFFIX
 
     /**
      * Constructor that set values using CMYK values.
@@ -104,21 +104,26 @@ class CMYK(var colorConverter: ColorConverter) {
 
         // update after all values are set
         colorConverter.isConvertMode = true
-        colorConverter.convert(ColorConverter.MODEL_HWB)
+        colorConverter.convert(ColorConverter.MODEL_CMYK)
     }
 
     /**
      * Set suffix for each value, separately.
-     * @param cSuffix cyan suffix
-     * @param mSuffix magenta suffix
-     * @param ySuffix yellow suffix
-     * @param kSuffix black suffix
+     * @param suffixes hue, saturation and value suffix
      */
-    fun setSuffix(cSuffix: String, mSuffix: String, ySuffix: String, kSuffix: String) {
-        this.cSuffix = cSuffix
-        this.mSuffix = mSuffix
-        this.ySuffix = ySuffix
-        this.kSuffix = kSuffix
+    fun setSuffix(vararg suffixes: String = arrayOf(this.cSuffix, this.mSuffix, this.ySuffix, this.kSuffix)) {
+        if (suffixes.size >= 0) {
+            this.cSuffix = suffixes[0]
+        }
+        if (suffixes.size >= 1) {
+            this.mSuffix = suffixes[1]
+        }
+        if (suffixes.size >= 2) {
+            this.ySuffix = suffixes[2]
+        }
+        if (suffixes.size >= 3) {
+            this.kSuffix = suffixes[3]
+        }
     }
 
     /**

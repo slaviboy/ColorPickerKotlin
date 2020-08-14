@@ -1,22 +1,22 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package com.slaviboy.colorpicker.models
 
-import com.slaviboy.colorpicker.converter.ColorConverter
-
-// Copyright (C) 2020 Stanislav Georgiev
-//  https://github.com/slaviboy
-//
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU Affero General Public License as
-//	published by the Free Software Foundation, either version 3 of the
-//	License, or (at your option) any later version.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU Affero General Public License for more details.
-//
-//	You should have received a copy of the GNU Affero General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import com.slaviboy.colorpicker.main.ColorConverter
 
 /**
  * Class that represents HSV(HUE, SATURATION and VALUE) color model
@@ -46,9 +46,9 @@ class HSV(var colorConverter: ColorConverter) {
             colorConverter.convert(ColorConverter.MODEL_HSV)
         }
 
-    var hSuffix = H_SUFFIX
-    var sSuffix = S_SUFFIX
-    var vSuffix = V_SUFFIX
+    var hSuffix:String = H_SUFFIX
+    var sSuffix:String = S_SUFFIX
+    var vSuffix:String = V_SUFFIX
 
     /**
      * Constructor that set values using HSV values.
@@ -82,7 +82,7 @@ class HSV(var colorConverter: ColorConverter) {
      * @param s saturation
      * @param v value
      */
-    fun setHSV(h: Int = this.h, s: Int= this.s, v: Int= this.v) {
+    fun setHSV(h: Int = this.h, s: Int = this.s, v: Int = this.v) {
 
         // do not convert models for each set value separately
         colorConverter.isConvertMode = false
@@ -98,14 +98,18 @@ class HSV(var colorConverter: ColorConverter) {
 
     /**
      * Set suffix for each value, separately.
-     * @param hSuffix hue suffix
-     * @param sSuffix saturation suffix
-     * @param vSuffix value suffix
+     * @param suffixes hue, saturation and value suffix
      */
-    fun setSuffix(hSuffix: String, sSuffix: String, vSuffix: String) {
-        this.hSuffix = hSuffix
-        this.sSuffix = sSuffix
-        this.vSuffix = vSuffix
+    fun setSuffix(vararg suffixes: String = arrayOf(this.hSuffix, this.sSuffix, this.vSuffix)) {
+        if (suffixes.size >= 0) {
+            this.hSuffix = suffixes[0]
+        }
+        if (suffixes.size >= 1) {
+            this.sSuffix = suffixes[1]
+        }
+        if (suffixes.size >= 2) {
+            this.vSuffix = suffixes[2]
+        }
     }
 
     /**
