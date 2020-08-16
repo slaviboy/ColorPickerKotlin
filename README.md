@@ -1,4 +1,5 @@
-<h1 align="center">ColorPicker for Android</h1>
+# ColorPicker for Android
+Simple library for creating fully modular color pickers written in Kotlin
 
 <p align="center">
     <img src="screens/home.png" alt="Image"   />
